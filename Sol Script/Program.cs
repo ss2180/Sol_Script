@@ -4,150 +4,174 @@ using System.IO;
 
 namespace Sol_Script
 {
-    enum TokenType
+    enum Instructions
     {
-        // Literals
-        NUMBER,
-
-        // Single Character Tokens
-        PLUS, MINUS, SLASH, STAR, EQUALS
+        ADD, SUBTRACT, DIVIDE, MULTIPLY
     }
 
-    class Token
+    class Parser
     {
-        public TokenType type { get; }
-        public string tokenValue { get; }
+        private Stack<Token> OutputStack = new Stack<Token>();
+        private Stack<Token> OperatorStack = new Stack<Token>();
 
-        public Token(TokenType type, string tokenValue)
-        {
-            this.type = type;
-            this.tokenValue = tokenValue;
-        }
-    }
-
-    class Scanner
-    {
-        private List<Token> tokens = new List<Token>();
-        public void ScanLine(string line)
-        {
-            int EOF =  line.Length;
-            int index = 0;
-
-            while (index < EOF)
-            {
-                if(line[index] == '-')
-                {
-                    tokens.Add(new Token(TokenType.MINUS, "-"));
-                    index++;
-                }
-                else if(line[index] == '+')
-                {
-                    tokens.Add(new Token(TokenType.PLUS, "+"));
-                    index++;
-                }
-                else if (line[index] == '*')
-                {
-                    tokens.Add(new Token(TokenType.STAR, "*"));
-                    index++;
-                }
-                else if (line[index] == '/')
-                {
-                    tokens.Add(new Token(TokenType.SLASH, "/"));
-                    index++;
-                }
-                else if (line[index] == '=')
-                {
-                    tokens.Add(new Token(TokenType.EQUALS, "="));
-                    index++;
-                }
-                else
-                {
-                    if(line[index] == ' ')
-                    {
-                        index++;
-                    }
-                    else
-                    {
-                        index = ScanToken(line, index);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Scans for the next token starting at the provided index and adds the token to the token list.
-        /// </summary>
-        /// <returns>The index of the start of the next token.</returns>
-        private int ScanToken(string text, int index)
-        {
-            int nextIndex = index + 1;
-            int numberCharLength = 1;
-
-            while (CharIsNumeric(text[nextIndex]))
-            {
-                nextIndex++;
-                numberCharLength++;
-            }
-
-            string numberString = text.Substring(index, numberCharLength);
-            tokens.Add(new Token(TokenType.NUMBER, numberString));
-
-            return nextIndex;
-        }
-
-        private bool CharIsNumeric(char c)
-        {
-            return c >= '0' && c <= '9';
-        }
-
-        public void DisplayTokens()
+        public Stack<Token> ParseExpression(List<Token> tokens)
         {
             foreach(Token token in tokens)
             {
-                string output = "";
-
-                switch(token.type)
+                switch(token.Type)
                 {
-                    case TokenType.EQUALS:
-                        output += "<EQUALS>";
-                        break;
-                    case TokenType.MINUS:
-                        output += "<MINUS>";
-                        break;
                     case TokenType.NUMBER:
-                        output += "<NUMBER>";
+                        OutputStack.Push(token);
                         break;
                     case TokenType.PLUS:
-                        output += "<PLUS>";
+                        HandleOperator(token);
+                        break;
+                    case TokenType.MINUS:
+                        HandleOperator(token);
                         break;
                     case TokenType.SLASH:
-                        output += "<SLASH>";
+                        HandleOperator(token);
                         break;
                     case TokenType.STAR:
-                        output += "<STAR>";
+                        HandleOperator(token);
+                        break;
+                    case TokenType.LEFT_BRACKET:
+                        OperatorStack.Push(token);
+                        break;
+                    case TokenType.RIGHT_BRACKET:
+                        HandleClosedBracket(token);
                         break;
                     default:
-                        System.Environment.Exit(-1);
                         break;
                 }
-
-                output += " ";
-                output += token.tokenValue;
-
-                Console.WriteLine(output);
             }
+
+            while(OperatorStack.Count != 0)
+            {
+                Token operand = OperatorStack.Pop();
+                OutputStack.Push(operand);
+            }
+
+            return OutputStack;
+        }
+
+        private void HandleOperator(Token token)
+        {
+            if (OperatorStack.Count > 0)
+            {
+                TokenType operatorTop = OperatorStack.Peek().Type;
+
+                while (IsPrecidenceLowerThanStack(token.Type))
+                {
+                    if(operatorTop == TokenType.LEFT_BRACKET)
+                    {
+                        break;
+                    }
+
+                    Token operand = OperatorStack.Pop();
+                    OutputStack.Push(operand);
+
+                    if(OperatorStack.Count == 0)
+                    {
+                        break;
+                    }
+
+                    operatorTop = OperatorStack.Peek().Type;
+                }
+            }
+
+            OperatorStack.Push(token);
+        }
+
+        private void HandleClosedBracket(Token token)
+        {
+            TokenType operatorTop = OperatorStack.Peek().Type;
+
+            while(operatorTop != TokenType.LEFT_BRACKET)
+            {
+                Token operand = OperatorStack.Pop();
+                OutputStack.Push(operand);
+
+                operatorTop = OperatorStack.Peek().Type;
+            }
+
+            OperatorStack.Pop();
+        }
+
+        private bool IsPrecidenceLowerThanStack(TokenType operator1)
+        {
+            TokenType operatorTop = OperatorStack.Peek().Type;
+
+            int stackPrecidenceLevel = 0;
+            int operatorPrecidenceLevel = 0;
+
+            switch(operatorTop)
+            {
+                case TokenType.SLASH:
+                    stackPrecidenceLevel = 3;
+                    break;
+                case TokenType.STAR:
+                    stackPrecidenceLevel = 3;
+                    break;
+                case TokenType.MINUS:
+                    stackPrecidenceLevel = 2;
+                    break;
+                case TokenType.PLUS:
+                    stackPrecidenceLevel = 2;
+                    break;
+            }
+
+            switch (operator1)
+            {
+                case TokenType.SLASH:
+                    operatorPrecidenceLevel = 3;
+                    break;
+                case TokenType.STAR:
+                    operatorPrecidenceLevel = 3;
+                    break;
+                case TokenType.MINUS:
+                    operatorPrecidenceLevel = 2;
+                    break;
+                case TokenType.PLUS:
+                    operatorPrecidenceLevel = 2;
+                    break;
+            }
+
+            if(stackPrecidenceLevel >= operatorPrecidenceLevel)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 
     class Program
     {
-        private static void Main()
+        private static int Main()
         {
-            string source = File.ReadAllText("./source.ss");
+            string source = File.ReadAllText("./source.sol");
 
             Scanner scanner = new Scanner();
-            scanner.ScanLine(source);
-            scanner.DisplayTokens();
+
+            try
+            {
+                scanner.ScanLine(source);
+            }
+            catch(IOException e)
+            {
+                Console.WriteLine(e);
+
+                return -1;
+            }
+
+            List<Token> tokens = scanner.Tokens;
+
+            Parser parser = new Parser();
+
+            Stack<Token> expression = parser.ParseExpression(tokens);
+
+            return 0;
         }
     }
 }
