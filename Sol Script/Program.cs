@@ -8,7 +8,7 @@ namespace Sol_Script
     {
         private static int Main()
         {
-            string source = File.ReadAllText("./source.sol");
+            string source = File.ReadAllText("../../../source.sol");
 
             Scanner scanner = new Scanner();
 
@@ -27,7 +27,9 @@ namespace Sol_Script
 
             Parser parser = new Parser();
 
-            Stack<Token> expression = parser.ParseExpression(tokens);
+            Token[] expression = parser.ParseExpression(tokens);
+
+            parser.ConvertExpressionToTree(expression);
 
             return 0;
         }

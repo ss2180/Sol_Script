@@ -4,17 +4,80 @@ using System.Text;
 
 namespace Sol_Script
 {
-    enum Instructions
+    enum Instruction
     {
-        ADD, SUBTRACT, DIVIDE, MULTIPLY
+        ADD, SUBTRACT, DIVIDE, MULTIPLY,
+
+        UNINITIALISED
     }
+
+    abstract class BaseASTNode
+    {
+        public BaseASTNode()
+        {
+        }
+    }
+
+    abstract class BranchableASTNode : BaseASTNode
+    {
+        public  BaseASTNode _left { get; set; }
+        public  BaseASTNode _right { get; set; }
+
+        public BranchableASTNode()
+        {
+            _left = null;
+            _right = null;
+        }
+
+        public BranchableASTNode(BranchableASTNode left, BranchableASTNode right)
+        {
+            _left = left;
+            _right = right;
+        }
+    }
+
+    class OperatorNode: BranchableASTNode
+    {
+        public Instruction operatorType { get; set; }
+        public OperatorNode() : base()
+        {
+            operatorType = Instruction.UNINITIALISED;
+        }
+
+        public OperatorNode(Instruction instruction) : base()
+        {
+            operatorType = instruction;
+        }
+
+        public OperatorNode(Instruction instruction, BranchableASTNode left, BranchableASTNode right) : base(left, right)
+        {
+            operatorType = instruction;
+        }
+    }
+
+    class NumberNode : BaseASTNode
+    {
+        public int Value { get; set; }
+
+        public NumberNode() : base()
+        {
+            Value = 0;
+        }
+
+        public NumberNode(int value) : base()
+        {
+            Value = value;
+        }
+    }
+
 
     class Parser
     {
         private Stack<Token> OutputStack = new Stack<Token>();
         private Stack<Token> OperatorStack = new Stack<Token>();
 
-        public Stack<Token> ParseExpression(List<Token> tokens)
+        
+        public Token[] ParseExpression(List<Token> tokens)
         {
             foreach (Token token in tokens)
             {
@@ -52,7 +115,36 @@ namespace Sol_Script
                 OutputStack.Push(operand);
             }
 
-            return OutputStack;
+            int stackLength = OutputStack.Count;
+            Token[] outputArray = new Token[stackLength];
+
+            while(stackLength != 0)
+            {
+                outputArray[stackLength - 1] = OutputStack.Pop();
+
+                stackLength = OutputStack.Count;
+            }
+
+            return outputArray;
+        }
+
+        public BranchableASTNode ConvertExpressionToTree(Token[] tokens)
+        {
+
+            Stack<Token> OperatorStack;
+
+            Stack<Token> OperandStack;
+
+
+            foreach(Token token in tokens)
+            {
+                if(token.Type == TokenType.NUMBER)
+                {
+                    OperandStack.Push(token);
+                }
+            }
+
+            return new OperatorNode();
         }
 
         private void HandleOperator(Token token)
