@@ -29,7 +29,7 @@ namespace Sol_Script
 
             Token[] expression = parser.ParseExpression(tokens);
 
-            parser.ConvertExpressionToTree(expression);
+            OperatorNode node = parser.ConvertExpressionToTree(expression) as OperatorNode;
 
             return 0;
         }

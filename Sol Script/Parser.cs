@@ -29,7 +29,7 @@ namespace Sol_Script
             _right = null;
         }
 
-        public BranchableASTNode(BranchableASTNode left, BranchableASTNode right)
+        public BranchableASTNode(BaseASTNode left, BaseASTNode right)
         {
             _left = left;
             _right = right;
@@ -38,18 +38,14 @@ namespace Sol_Script
 
     class OperatorNode: BranchableASTNode
     {
-        public Instruction operatorType { get; set; }
-        public OperatorNode() : base()
-        {
-            operatorType = Instruction.UNINITIALISED;
-        }
+        public TokenType operatorType { get; set; }
 
-        public OperatorNode(Instruction instruction) : base()
+        public OperatorNode(TokenType instruction) : base()
         {
             operatorType = instruction;
         }
 
-        public OperatorNode(Instruction instruction, BranchableASTNode left, BranchableASTNode right) : base(left, right)
+        public OperatorNode(TokenType instruction, BaseASTNode left, BaseASTNode right) : base(left, right)
         {
             operatorType = instruction;
         }
@@ -130,21 +126,43 @@ namespace Sol_Script
 
         public BranchableASTNode ConvertExpressionToTree(Token[] tokens)
         {
+            Stack<int> numbers = new Stack<int>();
 
-            Stack<Token> OperatorStack;
+            Stack<BranchableASTNode> nodes = new Stack<BranchableASTNode>();
 
-            Stack<Token> OperandStack;
-
-
-            foreach(Token token in tokens)
+            foreach( Token token in tokens)
             {
                 if(token.Type == TokenType.NUMBER)
                 {
-                    OperandStack.Push(token);
+                    numbers.Push(int.Parse(token.TokenValue));
+                }
+                else
+                {
+                    if(numbers.Count >= 2)
+                    {
+                        OperatorNode operatorNode = new OperatorNode(token.Type, new NumberNode(numbers.Pop()), new NumberNode(numbers.Pop()));
+
+                        nodes.Push(operatorNode);
+                    }
+                    else if(nodes.Count >= 2)
+                    {
+                        OperatorNode node1 = nodes.Pop() as OperatorNode;
+                        OperatorNode node2 = nodes.Pop() as OperatorNode;
+
+                        nodes.Push(new OperatorNode(token.Type, node2, node1));
+                    }
+                    else
+                    {
+                        OperatorNode node = nodes.Pop() as OperatorNode;
+
+                        OperatorNode operatorNode = new OperatorNode(token.Type, node, new NumberNode(numbers.Pop()));
+
+                        nodes.Push(operatorNode);
+                    }
                 }
             }
 
-            return new OperatorNode();
+            return nodes.Pop();
         }
 
         private void HandleOperator(Token token)
