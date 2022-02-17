@@ -138,6 +138,8 @@ namespace Sol_Script
                 }
                 else
                 {
+                    // Create subtree if current token precidence is higher than top of node stack.
+
                     if(numbers.Count >= 2)
                     {
                         OperatorNode operatorNode = new OperatorNode(token.Type, new NumberNode(numbers.Pop()), new NumberNode(numbers.Pop()));
