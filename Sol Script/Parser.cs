@@ -36,37 +36,14 @@ namespace Sol_Script
         }
 
         /// <summary>
-        /// Recursively traverses tree to insert node, tries to insert right side first.
+        /// Recursively traverses tree to insert node, tries to insert lift side first. Nodes are assumed to be in prefix format for correct ordering.
         /// </summary>
-        /// <param name="node"></param>
+        /// <param name="node">Node to insert</param>
         public bool InsertNode(BaseASTNode node)
         {
-            if(_right == null)
-            {
-                _right = node;
-            }
-            else if(_right is BranchableASTNode)
-            {
-                if((_right as BranchableASTNode).InsertNode(node) == false)
-                {
-                    if (_left is BranchableASTNode)
-                    {
-                        if ((_left as BranchableASTNode).InsertNode(node) == false)
-                        {
-                            return false;
-                        }
-                    }
-                    else if(_left == null)
-                    {
-                        _left = node;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            else if (_left == null)
+            // Consider adding flags nodes to indicate all nodes below flagged node terminate, this should speed up node insertion.
+
+            if (_left == null)
             {
                 _left = node;
             }
@@ -84,6 +61,31 @@ namespace Sol_Script
                     else if (_right == null)
                     {
                         _right = node;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            else if (_right == null)
+            {
+                _right = node;
+            }
+            else if (_right is BranchableASTNode)
+            {
+                if ((_right as BranchableASTNode).InsertNode(node) == false)
+                {
+                    if (_left is BranchableASTNode)
+                    {
+                        if ((_left as BranchableASTNode).InsertNode(node) == false)
+                        {
+                            return false;
+                        }
+                    }
+                    else if (_left == null)
+                    {
+                        _left = node;
                     }
                     else
                     {
