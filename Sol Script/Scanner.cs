@@ -15,8 +15,8 @@ namespace Sol_Script
 
     class Token
     {
-        public TokenType Type { get; }
-        public string TokenValue { get; }
+        public TokenType Type { get; set; }
+        public string TokenValue { get; set; }
 
         public Token(TokenType type, string tokenValue)
         {

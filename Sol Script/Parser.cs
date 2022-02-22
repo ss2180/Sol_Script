@@ -34,6 +34,70 @@ namespace Sol_Script
             _left = left;
             _right = right;
         }
+
+        /// <summary>
+        /// Recursively traverses tree to insert node, tries to insert right side first.
+        /// </summary>
+        /// <param name="node"></param>
+        public bool InsertNode(BaseASTNode node)
+        {
+            if(_right == null)
+            {
+                _right = node;
+            }
+            else if(_right is BranchableASTNode)
+            {
+                if((_right as BranchableASTNode).InsertNode(node) == false)
+                {
+                    if (_left is BranchableASTNode)
+                    {
+                        if ((_left as BranchableASTNode).InsertNode(node) == false)
+                        {
+                            return false;
+                        }
+                    }
+                    else if(_left == null)
+                    {
+                        _left = node;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            else if (_left == null)
+            {
+                _left = node;
+            }
+            else if (_left is BranchableASTNode)
+            {
+                if ((_left as BranchableASTNode).InsertNode(node) == false)
+                {
+                    if (_right is BranchableASTNode)
+                    {
+                        if ((_right as BranchableASTNode).InsertNode(node) == false)
+                        {
+                            return false;
+                        }
+                    }
+                    else if (_right == null)
+                    {
+                        _right = node;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 
     class OperatorNode: BranchableASTNode
@@ -72,9 +136,10 @@ namespace Sol_Script
         private Stack<Token> OutputStack = new Stack<Token>();
         private Stack<Token> OperatorStack = new Stack<Token>();
 
-        
-        public Token[] ParseExpression(List<Token> tokens)
+        public Token[] ConvertToPrefix(List<Token> tokens)
         {
+            tokens.Reverse();
+
             foreach (Token token in tokens)
             {
                 switch (token.Type)
@@ -95,10 +160,15 @@ namespace Sol_Script
                         HandleOperator(token);
                         break;
                     case TokenType.LEFT_BRACKET:
-                        OperatorStack.Push(token);
+                        token.Type = TokenType.RIGHT_BRACKET;
+                        token.TokenValue = ")";
+                        HandleClosedBracket(token);
                         break;
                     case TokenType.RIGHT_BRACKET:
-                        HandleClosedBracket(token);
+                        token.Type = TokenType.LEFT_BRACKET;
+                        token.TokenValue = "(";
+                        OperatorStack.Push(token);
+
                         break;
                     default:
                         break;
@@ -121,50 +191,32 @@ namespace Sol_Script
                 stackLength = OutputStack.Count;
             }
 
+            Array.Reverse(outputArray);
+
             return outputArray;
         }
 
         public BranchableASTNode ConvertExpressionToTree(Token[] tokens)
         {
-            Stack<int> numbers = new Stack<int>();
+            int index = 1;
 
-            Stack<BranchableASTNode> nodes = new Stack<BranchableASTNode>();
+            BranchableASTNode root = new OperatorNode(tokens[0].Type);
 
-            foreach( Token token in tokens)
+            while (index < tokens.Length)
             {
-                if(token.Type == TokenType.NUMBER)
+                if(tokens[index].Type == TokenType.NUMBER)
                 {
-                    numbers.Push(int.Parse(token.TokenValue));
+                    root.InsertNode(new NumberNode(int.Parse(tokens[index].TokenValue)));
                 }
                 else
                 {
-                    // Create subtree if current token precidence is higher than top of node stack.
-
-                    if(numbers.Count >= 2)
-                    {
-                        OperatorNode operatorNode = new OperatorNode(token.Type, new NumberNode(numbers.Pop()), new NumberNode(numbers.Pop()));
-
-                        nodes.Push(operatorNode);
-                    }
-                    else if(nodes.Count >= 2)
-                    {
-                        OperatorNode node1 = nodes.Pop() as OperatorNode;
-                        OperatorNode node2 = nodes.Pop() as OperatorNode;
-
-                        nodes.Push(new OperatorNode(token.Type, node2, node1));
-                    }
-                    else
-                    {
-                        OperatorNode node = nodes.Pop() as OperatorNode;
-
-                        OperatorNode operatorNode = new OperatorNode(token.Type, node, new NumberNode(numbers.Pop()));
-
-                        nodes.Push(operatorNode);
-                    }
+                    root.InsertNode(new OperatorNode(tokens[index].Type));
                 }
+
+                index++;
             }
 
-            return nodes.Pop();
+            return root;
         }
 
         private void HandleOperator(Token token)
@@ -173,7 +225,7 @@ namespace Sol_Script
             {
                 TokenType operatorTop = OperatorStack.Peek().Type;
 
-                while (IsPrecidenceLowerThanStack(token.Type))
+                while (IsPrecidenceLowerThanStack(token.Type) && operatorTop != TokenType.LEFT_BRACKET)
                 {
                     if (operatorTop == TokenType.LEFT_BRACKET)
                     {
@@ -249,7 +301,7 @@ namespace Sol_Script
                     break;
             }
 
-            if (stackPrecidenceLevel >= operatorPrecidenceLevel)
+            if (stackPrecidenceLevel > operatorPrecidenceLevel)
             {
                 return true;
             }

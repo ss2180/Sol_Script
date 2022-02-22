@@ -27,7 +27,7 @@ namespace Sol_Script
 
             Parser parser = new Parser();
 
-            Token[] expression = parser.ParseExpression(tokens);
+            Token[] expression = parser.ConvertToPrefix(tokens);
 
             OperatorNode node = parser.ConvertExpressionToTree(expression) as OperatorNode;
 
