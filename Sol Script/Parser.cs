@@ -11,127 +11,29 @@ namespace Sol_Script
         UNINITIALISED
     }
 
-    abstract class BaseASTNode
+    abstract class Node
     {
-        public BaseASTNode()
+        private Node _prev = null;
+
+        public void BuildAST(Stack<Token> tokens)
         {
+            while(tokens.Count != 0)
+            {
+                Token token = tokens.Pop();
+            }
         }
     }
 
-    abstract class BranchableASTNode : BaseASTNode
+    class OperatorNode : Node
     {
-        public  BaseASTNode _left { get; set; }
-        public  BaseASTNode _right { get; set; }
-
-        public BranchableASTNode()
-        {
-            _left = null;
-            _right = null;
-        }
-
-        public BranchableASTNode(BaseASTNode left, BaseASTNode right)
-        {
-            _left = left;
-            _right = right;
-        }
-
-        /// <summary>
-        /// Recursively traverses tree to insert node, tries to insert lift side first. Nodes are assumed to be in prefix format for correct ordering.
-        /// </summary>
-        /// <param name="node">Node to insert</param>
-        public bool InsertNode(BaseASTNode node)
-        {
-            // Consider adding flags nodes to indicate all nodes below flagged node terminate, this should speed up node insertion.
-
-            if (_left == null)
-            {
-                _left = node;
-            }
-            else if (_left is BranchableASTNode)
-            {
-                if ((_left as BranchableASTNode).InsertNode(node) == false)
-                {
-                    if (_right is BranchableASTNode)
-                    {
-                        if ((_right as BranchableASTNode).InsertNode(node) == false)
-                        {
-                            return false;
-                        }
-                    }
-                    else if (_right == null)
-                    {
-                        _right = node;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            else if (_right == null)
-            {
-                _right = node;
-            }
-            else if (_right is BranchableASTNode)
-            {
-                if ((_right as BranchableASTNode).InsertNode(node) == false)
-                {
-                    if (_left is BranchableASTNode)
-                    {
-                        if ((_left as BranchableASTNode).InsertNode(node) == false)
-                        {
-                            return false;
-                        }
-                    }
-                    else if (_left == null)
-                    {
-                        _left = node;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            else
-            {
-                return false;
-            }
-
-            return true;
-        }
+        private Node _left;
+        private Node _right;
     }
 
-    class OperatorNode: BranchableASTNode
-    {
-        public TokenType operatorType { get; set; }
-
-        public OperatorNode(TokenType instruction) : base()
-        {
-            operatorType = instruction;
-        }
-
-        public OperatorNode(TokenType instruction, BaseASTNode left, BaseASTNode right) : base(left, right)
-        {
-            operatorType = instruction;
-        }
-    }
-
-    class NumberNode : BaseASTNode
+    class NumberNode : Node
     {
         public int Value { get; set; }
-
-        public NumberNode() : base()
-        {
-            Value = 0;
-        }
-
-        public NumberNode(int value) : base()
-        {
-            Value = value;
-        }
     }
-
 
     class Parser
     {
