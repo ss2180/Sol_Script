@@ -29,8 +29,6 @@ namespace Sol_Script
 
             Token[] expression = parser.ConvertToPrefix(tokens);
 
-            OperatorNode node = parser.ConvertExpressionToTree(expression) as OperatorNode;
-
             return 0;
         }
     }

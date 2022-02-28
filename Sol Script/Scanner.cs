@@ -20,8 +20,8 @@ namespace Sol_Script
 
         public Token(TokenType type, string tokenValue)
         {
-            this.Type = type;
-            this.TokenValue = tokenValue;
+            Type = type;
+            TokenValue = tokenValue;
         }
     }
 

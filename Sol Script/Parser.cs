@@ -4,35 +4,64 @@ using System.Text;
 
 namespace Sol_Script
 {
-    enum Instruction
+    class Node
     {
-        ADD, SUBTRACT, DIVIDE, MULTIPLY,
+        private Node _left = null;
+        private Node _right = null;
 
-        UNINITIALISED
-    }
+        public TokenType Type { get; set; }
 
-    abstract class Node
-    {
-        private Node _prev = null;
+        public Node(TokenType type)
+        {
+            Type = type;
+        }
 
         public void BuildAST(Stack<Token> tokens)
         {
-            while(tokens.Count != 0)
+            if(_left == null)
             {
-                Token token = tokens.Pop();
+                _left = CreateNode(tokens.Pop());
+                if(_left.Type != TokenType.NUMBER)
+                {
+                    _left.BuildAST(tokens);
+                }
+            }
+
+            if(_right == null)
+            {
+                _right = CreateNode(tokens.Pop());
+                if(_right.Type != TokenType.NUMBER)
+                {
+                    _right.BuildAST(tokens);
+                }
             }
         }
-    }
 
-    class OperatorNode : Node
-    {
-        private Node _left;
-        private Node _right;
+        private Node CreateNode(Token token)
+        {
+            Node node = null;
+
+            if(token.Type == TokenType.NUMBER)
+            {
+                node = new NumberNode(token.Type, int.Parse(token.TokenValue));
+            }
+            else
+            {
+                node = new Node(token.Type);
+            }
+
+            return node;
+        }
     }
 
     class NumberNode : Node
     {
         public int Value { get; set; }
+
+        public NumberNode(TokenType type, int value) : base(type)
+        {
+            Value = value;
+        }
     }
 
     class Parser
@@ -98,29 +127,6 @@ namespace Sol_Script
             Array.Reverse(outputArray);
 
             return outputArray;
-        }
-
-        public BranchableASTNode ConvertExpressionToTree(Token[] tokens)
-        {
-            int index = 1;
-
-            BranchableASTNode root = new OperatorNode(tokens[0].Type);
-
-            while (index < tokens.Length)
-            {
-                if(tokens[index].Type == TokenType.NUMBER)
-                {
-                    root.InsertNode(new NumberNode(int.Parse(tokens[index].TokenValue)));
-                }
-                else
-                {
-                    root.InsertNode(new OperatorNode(tokens[index].Type));
-                }
-
-                index++;
-            }
-
-            return root;
         }
 
         private void HandleOperator(Token token)
