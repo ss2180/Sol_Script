@@ -6,14 +6,21 @@ namespace Sol_Script
 {
     class Node
     {
-        private Node _left = null;
-        private Node _right = null;
+        public Node Parent { get; } = null;
+        public Node Left { get; set; } = null;
+        public Node Right { get; set; } = null;
 
         public TokenType Type { get; set; }
 
         public Node(TokenType type)
         {
             Type = type;
+        }
+
+        public Node(TokenType type, Node parent)
+        {
+            Type = type;
+            Parent = parent;
         }
 
         // Builds tree based off stack of prefix tokens.
@@ -25,21 +32,21 @@ namespace Sol_Script
 
         public void BuildAST(Stack<Token> tokens)
         {
-            if(_left == null)
+            if(Left == null)
             {
-                _left = CreateNode(tokens.Pop());
-                if(_left.Type != TokenType.NUMBER)
+                Left = CreateNode(tokens.Pop());
+                if(Left.Type != TokenType.NUMBER)
                 {
-                    _left.BuildAST(tokens);
+                    Left.BuildAST(tokens);
                 }
             }
 
-            if(_right == null)
+            if(Right == null)
             {
-                _right = CreateNode(tokens.Pop());
-                if(_right.Type != TokenType.NUMBER)
+                Right = CreateNode(tokens.Pop());
+                if(Right.Type != TokenType.NUMBER)
                 {
-                    _right.BuildAST(tokens);
+                    Right.BuildAST(tokens);
                 }
             }
         }
@@ -50,11 +57,11 @@ namespace Sol_Script
 
             if(token.Type == TokenType.NUMBER)
             {
-                node = new NumberNode(token.Type, int.Parse(token.TokenValue));
+                node = new NumberNode(token.Type, this, int.Parse(token.TokenValue));
             }
             else
             {
-                node = new Node(token.Type);
+                node = new Node(token.Type, this);
             }
 
             return node;
@@ -65,7 +72,7 @@ namespace Sol_Script
     {
         public int Value { get; set; }
 
-        public NumberNode(TokenType type, int value) : base(type)
+        public NumberNode(TokenType type, Node parent, int value) : base(type, parent)
         {
             Value = value;
         }
