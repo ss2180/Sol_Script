@@ -16,6 +16,13 @@ namespace Sol_Script
             Type = type;
         }
 
+        // Builds tree based off stack of prefix tokens.
+        public Node(Stack<Token> tokens)
+        {
+            Type = tokens.Pop().Type;
+            BuildAST(tokens);
+        }
+
         public void BuildAST(Stack<Token> tokens)
         {
             if(_left == null)
@@ -69,7 +76,7 @@ namespace Sol_Script
         private Stack<Token> OutputStack = new Stack<Token>();
         private Stack<Token> OperatorStack = new Stack<Token>();
 
-        public Token[] ConvertToPrefix(List<Token> tokens)
+        public Stack<Token> ConvertToPrefix(List<Token> tokens)
         {
             tokens.Reverse();
 
@@ -114,19 +121,7 @@ namespace Sol_Script
                 OutputStack.Push(operand);
             }
 
-            int stackLength = OutputStack.Count;
-            Token[] outputArray = new Token[stackLength];
-
-            while(stackLength != 0)
-            {
-                outputArray[stackLength - 1] = OutputStack.Pop();
-
-                stackLength = OutputStack.Count;
-            }
-
-            Array.Reverse(outputArray);
-
-            return outputArray;
+            return OutputStack;
         }
 
         private void HandleOperator(Token token)

@@ -27,7 +27,9 @@ namespace Sol_Script
 
             Parser parser = new Parser();
 
-            Token[] expression = parser.ConvertToPrefix(tokens);
+            Stack<Token> expression = parser.ConvertToPrefix(tokens);
+
+            Node AST_Root = new Node(expression);
 
             return 0;
         }
