@@ -32,17 +32,12 @@ namespace Sol_Script
                 }
                 else if (line[index] == '*')
                 {
-                    _tokens.Add(new Token(TokenType.STAR, "*"));
+                    _tokens.Add(new Token(TokenType.MULTIPLY, "*"));
                     index++;
                 }
                 else if (line[index] == '/')
                 {
-                    _tokens.Add(new Token(TokenType.SLASH, "/"));
-                    index++;
-                }
-                else if (line[index] == '=')
-                {
-                    _tokens.Add(new Token(TokenType.EQUALS, "="));
+                    _tokens.Add(new Token(TokenType.DIVIDE, "/"));
                     index++;
                 }
                 else if (line[index] == '(')
@@ -55,6 +50,21 @@ namespace Sol_Script
                     _tokens.Add(new Token(TokenType.RIGHT_BRACKET, ")"));
                     index++;
                 }
+                else if (line[index] == '=')
+                {
+                    _tokens.Add(new Token(TokenType.ASSIGN, "="));
+                    index++;
+                }
+                else if (line[index] == '>')
+                {
+                    _tokens.Add(new Token(TokenType.GREATER, ">"));
+                    index++;
+                }
+                else if (line[index] == '<')
+                {
+                    _tokens.Add(new Token(TokenType.LESS, "<"));
+                    index++;
+                }
                 else
                 {
                     if (line[index] == ' ')
@@ -63,7 +73,7 @@ namespace Sol_Script
                     }
                     else if (CharIsNumeric(line[index]))
                     {
-                        index = ScanToken(line, index);
+                        index = ScanNumber(line, index);
                     }
                     else
                     {
@@ -77,7 +87,7 @@ namespace Sol_Script
         /// Scans for the next token starting at the provided index and adds the token to the token list.
         /// </summary>
         /// <returns>The index of the start of the next token.</returns>
-        private int ScanToken(string text, int index)
+        private int ScanNumber(string text, int index)
         {
             int nextIndex = index + 1;
             int numberCharLength = 1;

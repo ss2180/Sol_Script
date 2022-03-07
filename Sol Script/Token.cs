@@ -10,7 +10,10 @@ namespace Sol_Script
         NUMBER,
 
         // Single Character Tokens
-        PLUS, MINUS, SLASH, STAR, EQUALS, LEFT_BRACKET, RIGHT_BRACKET
+        PLUS, MINUS, DIVIDE, MULTIPLY, ASSIGN, LEFT_BRACKET, RIGHT_BRACKET, GREATER, LESS,
+
+        // Two Character Tokens
+        EQUALITY, GREATER_OR_EQUAL, LESS_OR_EQUAL
     }
 
     class Token

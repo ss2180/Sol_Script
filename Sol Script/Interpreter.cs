@@ -25,10 +25,10 @@ namespace Sol_Script
                     case TokenType.MINUS:
                         return a - b;
 
-                    case TokenType.STAR:
+                    case TokenType.MULTIPLY:
                         return a * b;
 
-                    case TokenType.SLASH:
+                    case TokenType.DIVIDE:
                         return a / b;
                 }
             }

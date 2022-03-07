@@ -26,10 +26,10 @@ namespace Sol_Script
                     case TokenType.MINUS:
                         HandleOperator(token);
                         break;
-                    case TokenType.SLASH:
+                    case TokenType.DIVIDE:
                         HandleOperator(token);
                         break;
-                    case TokenType.STAR:
+                    case TokenType.MULTIPLY:
                         HandleOperator(token);
                         break;
                     case TokenType.LEFT_BRACKET:
@@ -109,10 +109,10 @@ namespace Sol_Script
 
             switch (operatorTop)
             {
-                case TokenType.SLASH:
+                case TokenType.DIVIDE:
                     stackPrecidenceLevel = 3;
                     break;
-                case TokenType.STAR:
+                case TokenType.MULTIPLY:
                     stackPrecidenceLevel = 3;
                     break;
                 case TokenType.MINUS:
@@ -125,10 +125,10 @@ namespace Sol_Script
 
             switch (operator1)
             {
-                case TokenType.SLASH:
+                case TokenType.DIVIDE:
                     operatorPrecidenceLevel = 3;
                     break;
-                case TokenType.STAR:
+                case TokenType.MULTIPLY:
                     operatorPrecidenceLevel = 3;
                     break;
                 case TokenType.MINUS:
