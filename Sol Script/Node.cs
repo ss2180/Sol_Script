@@ -6,7 +6,6 @@ namespace Sol_Script
 {
     class Node
     {
-        public Node Parent { get; } = null;
         public Node Left { get; set; } = null;
         public Node Right { get; set; } = null;
 
@@ -15,12 +14,6 @@ namespace Sol_Script
         public Node(TokenType type)
         {
             Type = type;
-        }
-
-        public Node(TokenType type, Node parent)
-        {
-            Type = type;
-            Parent = parent;
         }
 
         // Builds tree based off stack of prefix tokens.
@@ -57,11 +50,11 @@ namespace Sol_Script
 
             if (token.Type == TokenType.NUMBER)
             {
-                node = new NumberNode(token.Type, this, int.Parse(token.TokenValue));
+                node = new NumberNode(token.Type, int.Parse(token.TokenValue));
             }
             else
             {
-                node = new Node(token.Type, this);
+                node = new Node(token.Type);
             }
 
             return node;
@@ -72,7 +65,7 @@ namespace Sol_Script
     {
         public int Value { get; set; }
 
-        public NumberNode(TokenType type, Node parent, int value) : base(type, parent)
+        public NumberNode(TokenType type, int value) : base(type)
         {
             Value = value;
         }
