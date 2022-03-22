@@ -25,6 +25,7 @@ namespace Sol_Script
 
             List<Token> tokens = scanner.Tokens;
 
+            /*
             Parser parser = new Parser();
 
             Stack<Token> expression = parser.ConvertToPrefix(tokens);
@@ -36,6 +37,7 @@ namespace Sol_Script
             float result = interpreter.InterpretExpression(AST_Root);
 
             Console.WriteLine("The result is: {0}", result);
+            */
 
             return 0;
         }

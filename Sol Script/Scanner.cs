@@ -20,65 +20,85 @@ namespace Sol_Script
 
             while (index < EOF)
             {
-                if (line[index] == '-')
+                switch (line[index])
                 {
-                    _tokens.Add(new Token(TokenType.MINUS, "-"));
-                    index++;
-                }
-                else if (line[index] == '+')
-                {
-                    _tokens.Add(new Token(TokenType.PLUS, "+"));
-                    index++;
-                }
-                else if (line[index] == '*')
-                {
-                    _tokens.Add(new Token(TokenType.MULTIPLY, "*"));
-                    index++;
-                }
-                else if (line[index] == '/')
-                {
-                    _tokens.Add(new Token(TokenType.DIVIDE, "/"));
-                    index++;
-                }
-                else if (line[index] == '(')
-                {
-                    _tokens.Add(new Token(TokenType.LEFT_BRACKET, "("));
-                    index++;
-                }
-                else if (line[index] == ')')
-                {
-                    _tokens.Add(new Token(TokenType.RIGHT_BRACKET, ")"));
-                    index++;
-                }
-                else if (line[index] == '=')
-                {
-                    _tokens.Add(new Token(TokenType.ASSIGN, "="));
-                    index++;
-                }
-                else if (line[index] == '>')
-                {
-                    _tokens.Add(new Token(TokenType.GREATER, ">"));
-                    index++;
-                }
-                else if (line[index] == '<')
-                {
-                    _tokens.Add(new Token(TokenType.LESS, "<"));
-                    index++;
-                }
-                else
-                {
-                    if (line[index] == ' ')
-                    {
+                    case ' ':
                         index++;
-                    }
-                    else if (CharIsNumeric(line[index]))
-                    {
-                        index = ScanNumber(line, index);
-                    }
-                    else
-                    {
-                        throw new IOException($"Character '{line[index]}' is not a recognised token pattern.");
-                    }
+                        break;
+                    case '-':
+                        _tokens.Add(new Token(TokenType.MINUS, "-"));
+                        index++;
+                        break;
+                    case '+':
+                        _tokens.Add(new Token(TokenType.PLUS, "+"));
+                        index++;
+                        break;
+                    case '*':
+                        _tokens.Add(new Token(TokenType.MULTIPLY, "*"));
+                        index++;
+                        break;
+                    case '/':
+                        _tokens.Add(new Token(TokenType.DIVIDE, "/"));
+                        index++;
+                        break;
+                    case '(':
+                        _tokens.Add(new Token(TokenType.LEFT_BRACKET, "("));
+                        index++;
+                        break;
+                    case ')':
+                        _tokens.Add(new Token(TokenType.RIGHT_BRACKET, ")"));
+                        index++;
+                        break;
+                    case '=':
+                        if (line[index + 1] == '=') //TODO: Make sure index is in bounds somehow.
+                        {
+                            _tokens.Add(new Token(TokenType.EQUALITY, "=="));
+                            index = index + 2;
+                        }
+                        else
+                        {
+                            _tokens.Add(new Token(TokenType.ASSIGN, "="));
+                            index++;
+                        }
+                        break;
+                    case '>':
+                        if (line[index + 1] == '=')
+                        {
+                            _tokens.Add(new Token(TokenType.GREATER_OR_EQUAL, ">="));
+                            index = index + 2;
+                        }
+                        else
+                        {
+                            _tokens.Add(new Token(TokenType.GREATER, ">"));
+                            index++;
+                        }
+                        break;
+                    case '<':
+                        if (line[index + 1] == '=')
+                        {
+                            _tokens.Add(new Token(TokenType.LESS_OR_EQUAL, "<="));
+                            index = index + 2;
+                        }
+                        else
+                        {
+                            _tokens.Add(new Token(TokenType.LESS, "<"));
+                            index++;
+                        }
+                        break;
+                    default:
+                        if (char.IsDigit(line[index]))
+                        {
+                            index = ScanNumber(line, index);
+                        }
+                        else if(char.IsLetter(line[index]))
+                        {
+                            index = ScanWord(line, index);
+                        }
+                        else
+                        {
+                            throw new IOException($"Character '{line[index]}' is not a recognised token pattern.");
+                        }
+                        break;
                 }
             }
         }
@@ -94,7 +114,7 @@ namespace Sol_Script
 
             if (nextIndex < text.Length)
             {
-                while (CharIsNumeric(text[nextIndex]))
+                while (char.IsDigit(text[nextIndex]))
                 {
                     nextIndex++;
                     numberCharLength++;
@@ -112,9 +132,74 @@ namespace Sol_Script
             return nextIndex;
         }
 
-        private bool CharIsNumeric(char c)
+        private int ScanWord(string text, int index)
         {
-            return c >= '0' && c <= '9';
+            int EOF = text.Length;
+
+            switch (text[index])
+            {
+                //true
+                case 't':
+                    if(index + 3 < EOF)
+                    {
+                        if(text.Substring(index, 4).ToLower() == "true")
+                        {
+                            _tokens.Add(new Token(TokenType.BOOL, "true"));
+                            index += 4;
+                        }
+                        else
+                        {
+                            index = ScanIdentifier(text, index);
+                        }
+                    }
+                    break;
+
+                //false
+                case 'f':
+                    if (index + 4 < EOF)
+                    {
+                        if (text.Substring(index, 5).ToLower() == "false")
+                        {
+                            _tokens.Add(new Token(TokenType.BOOL, "false"));
+                            index += 5;
+                        }
+                        else
+                        {
+                            index = ScanIdentifier(text, index);
+                        }
+                    }
+                    break;
+                default:
+                    index = ScanIdentifier(text, index);
+                    break;
+            }
+
+            return index;
+        }
+
+        private int ScanIdentifier(string text, int index)
+        {
+            int nextIndex = index + 1;
+            int tokenLength = 1;
+
+            if (nextIndex < text.Length)
+            {
+                while (char.IsLetterOrDigit(text[nextIndex]))
+                {
+                    nextIndex++;
+                    tokenLength++;
+
+                    if (nextIndex >= text.Length)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            string identiferString = text.Substring(index, tokenLength);
+            _tokens.Add(new Token(TokenType.IDENTIFIER, identiferString));
+
+            return nextIndex;
         }
 
         public void DisplayTokens()
