@@ -13,7 +13,7 @@ namespace Sol_Script
         PLUS, MINUS, DIVIDE, MULTIPLY, ASSIGN, LEFT_BRACKET, RIGHT_BRACKET, GREATER, LESS,
 
         // Two Character Tokens
-        EQUALITY, GREATER_OR_EQUAL, LESS_OR_EQUAL,
+        EQUAL, NOTEQUAL, GREATER_OR_EQUAL, LESS_OR_EQUAL,
 
         //Identifier
         IDENTIFIER

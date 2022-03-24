@@ -18,32 +18,37 @@ namespace Sol_Script
                 switch (token.Type)
                 {
                     case TokenType.NUMBER:
+                    case TokenType.BOOL:
                         OutputStack.Push(token);
                         break;
+
                     case TokenType.PLUS:
-                        HandleOperator(token);
-                        break;
                     case TokenType.MINUS:
-                        HandleOperator(token);
-                        break;
                     case TokenType.DIVIDE:
-                        HandleOperator(token);
-                        break;
                     case TokenType.MULTIPLY:
+                    case TokenType.GREATER:
+                    case TokenType.LESS:
+                    case TokenType.GREATER_OR_EQUAL:
+                    case TokenType.LESS_OR_EQUAL:
+                    case TokenType.EQUAL:
+                    case TokenType.NOTEQUAL:
                         HandleOperator(token);
                         break;
+
                     case TokenType.LEFT_BRACKET:
                         token.Type = TokenType.RIGHT_BRACKET;
                         token.TokenValue = ")";
                         HandleClosedBracket(token);
                         break;
+
                     case TokenType.RIGHT_BRACKET:
                         token.Type = TokenType.LEFT_BRACKET;
                         token.TokenValue = "(";
                         OperatorStack.Push(token);
-
                         break;
+
                     default:
+                        Console.WriteLine("Unexpected token: {0}", token.Type);
                         break;
                 }
             }
@@ -100,44 +105,12 @@ namespace Sol_Script
             OperatorStack.Pop();
         }
 
-        private bool IsPrecidenceLowerThanStack(TokenType operator1)
+        private bool IsPrecidenceLowerThanStack(TokenType op)
         {
             TokenType operatorTop = OperatorStack.Peek().Type;
 
-            int stackPrecidenceLevel = 0;
-            int operatorPrecidenceLevel = 0;
-
-            switch (operatorTop)
-            {
-                case TokenType.DIVIDE:
-                    stackPrecidenceLevel = 3;
-                    break;
-                case TokenType.MULTIPLY:
-                    stackPrecidenceLevel = 3;
-                    break;
-                case TokenType.MINUS:
-                    stackPrecidenceLevel = 2;
-                    break;
-                case TokenType.PLUS:
-                    stackPrecidenceLevel = 2;
-                    break;
-            }
-
-            switch (operator1)
-            {
-                case TokenType.DIVIDE:
-                    operatorPrecidenceLevel = 3;
-                    break;
-                case TokenType.MULTIPLY:
-                    operatorPrecidenceLevel = 3;
-                    break;
-                case TokenType.MINUS:
-                    operatorPrecidenceLevel = 2;
-                    break;
-                case TokenType.PLUS:
-                    operatorPrecidenceLevel = 2;
-                    break;
-            }
+            int stackPrecidenceLevel = GetOperatorPrecidence(operatorTop);
+            int operatorPrecidenceLevel = GetOperatorPrecidence(op);
 
             if (stackPrecidenceLevel > operatorPrecidenceLevel)
             {
@@ -145,6 +118,31 @@ namespace Sol_Script
             }
 
             return false;
+        }
+
+        private int GetOperatorPrecidence(TokenType op)
+        {
+            switch (op)
+            {
+                case TokenType.DIVIDE:
+                case TokenType.MULTIPLY:
+                    return 3;
+                case TokenType.MINUS:
+                case TokenType.PLUS:
+                    return 2;
+                case TokenType.GREATER:
+                case TokenType.LESS:
+                case TokenType.GREATER_OR_EQUAL:
+                case TokenType.LESS_OR_EQUAL:
+                    return 1;
+                case TokenType.EQUAL:
+                case TokenType.NOTEQUAL:
+                    return 0;
+
+                default:
+                    throw new Exception($"Unexpected token type: {op}");
+
+            }
         }
     }
 }

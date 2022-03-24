@@ -1,1 +1,1 @@
-8 * ( 3 / 3 ) - 5 + 1 * 4 / 2 true false thisis123atest 23 / false
+6 + 3 > 2 - 1 / 2 * 3 == false

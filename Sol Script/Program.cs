@@ -25,19 +25,18 @@ namespace Sol_Script
 
             List<Token> tokens = scanner.Tokens;
 
-            /*
+            
             Parser parser = new Parser();
 
             Stack<Token> expression = parser.ConvertToPrefix(tokens);
 
+            
             Node AST_Root = new Node(expression);
 
             Interpreter interpreter = new Interpreter();
 
-            float result = interpreter.InterpretExpression(AST_Root);
-
-            Console.WriteLine("The result is: {0}", result);
-            */
+            interpreter.InterpretExpression(AST_Root);
+            
 
             return 0;
         }

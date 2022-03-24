@@ -28,7 +28,7 @@ namespace Sol_Script
             if (Left == null)
             {
                 Left = CreateNode(tokens.Pop());
-                if (Left.Type != TokenType.NUMBER)
+                if (Left.Type != TokenType.NUMBER && Left.Type != TokenType.BOOL)
                 {
                     Left.BuildAST(tokens);
                 }
@@ -37,7 +37,7 @@ namespace Sol_Script
             if (Right == null)
             {
                 Right = CreateNode(tokens.Pop());
-                if (Right.Type != TokenType.NUMBER)
+                if (Right.Type != TokenType.NUMBER && Right.Type != TokenType.BOOL)
                 {
                     Right.BuildAST(tokens);
                 }
@@ -51,6 +51,10 @@ namespace Sol_Script
             if (token.Type == TokenType.NUMBER)
             {
                 node = new NumberNode(token.Type, int.Parse(token.TokenValue));
+            }
+            else if(token.Type == TokenType.BOOL)
+            {
+                node = new BoolNode(token.Type, bool.Parse(token.TokenValue));
             }
             else
             {
@@ -66,6 +70,16 @@ namespace Sol_Script
         public int Value { get; set; }
 
         public NumberNode(TokenType type, int value) : base(type)
+        {
+            Value = value;
+        }
+    }
+
+    class BoolNode : Node
+    {
+        public bool Value { get; set; }
+
+        public BoolNode(TokenType type, bool value) : base(type)
         {
             Value = value;
         }

@@ -49,10 +49,21 @@ namespace Sol_Script
                         _tokens.Add(new Token(TokenType.RIGHT_BRACKET, ")"));
                         index++;
                         break;
+                    case '!':
+                        if (line[index + 1] == '=')
+                        {
+                            _tokens.Add(new Token(TokenType.NOTEQUAL, "!="));
+                            index = index + 2;
+                        }
+                        else
+                        {
+                            throw new IOException($"Character '{line[index]}' is not a recognised token pattern.");
+                        }
+                        break;
                     case '=':
                         if (line[index + 1] == '=') //TODO: Make sure index is in bounds somehow.
                         {
-                            _tokens.Add(new Token(TokenType.EQUALITY, "=="));
+                            _tokens.Add(new Token(TokenType.EQUAL, "=="));
                             index = index + 2;
                         }
                         else
