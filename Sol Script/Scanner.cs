@@ -57,7 +57,8 @@ namespace Sol_Script
                         }
                         else
                         {
-                            throw new IOException($"Character '{line[index]}' is not a recognised token pattern.");
+                            _tokens.Add(new Token(TokenType.NOT, "!"));
+                            index++;
                         }
                         break;
                     case '=':

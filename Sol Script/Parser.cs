@@ -32,6 +32,7 @@ namespace Sol_Script
                     case TokenType.LESS_OR_EQUAL:
                     case TokenType.EQUAL:
                     case TokenType.NOTEQUAL:
+                    case TokenType.NOT:
                         HandleOperator(token);
                         break;
 
@@ -124,6 +125,10 @@ namespace Sol_Script
         {
             switch (op)
             {
+                case TokenType.LEFT_BRACKET:
+                    return 5;
+                case TokenType.NOT:
+                    return 4;
                 case TokenType.DIVIDE:
                 case TokenType.MULTIPLY:
                     return 3;

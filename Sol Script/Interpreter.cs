@@ -56,9 +56,12 @@ namespace Sol_Script
 
                 case TokenType.DIVIDE:
                     return a / b;
+
+                default:
+                    throw new Exception("You should not be here!");
             }
 
-            throw new Exception("You should not be here!");
+            
         }
 
         private bool EvaluateBooleanExpression(Node expressionRoot)

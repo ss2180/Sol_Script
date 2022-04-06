@@ -6,9 +6,6 @@ namespace Sol_Script
 {
     class Node
     {
-        public Node Left { get; set; } = null;
-        public Node Right { get; set; } = null;
-
         public TokenType Type { get; set; }
 
         public Node(TokenType type)
@@ -20,31 +17,11 @@ namespace Sol_Script
         public Node(Stack<Token> tokens)
         {
             Type = tokens.Pop().Type;
-            BuildAST(tokens);
         }
 
-        public void BuildAST(Stack<Token> tokens)
-        {
-            if (Left == null)
-            {
-                Left = CreateNode(tokens.Pop());
-                if (Left.Type != TokenType.NUMBER && Left.Type != TokenType.BOOL)
-                {
-                    Left.BuildAST(tokens);
-                }
-            }
+        
 
-            if (Right == null)
-            {
-                Right = CreateNode(tokens.Pop());
-                if (Right.Type != TokenType.NUMBER && Right.Type != TokenType.BOOL)
-                {
-                    Right.BuildAST(tokens);
-                }
-            }
-        }
-
-        private Node CreateNode(Token token)
+        public Node CreateNode(Token token)
         {
             Node node = null;
 
@@ -62,6 +39,39 @@ namespace Sol_Script
             }
 
             return node;
+        }
+    }
+
+    class OperatorNode : Node
+    {
+        public Node Left { get; set; } = null;
+        public Node Right { get; set; } = null;
+
+        public OperatorNode(TokenType type) : base(type)
+        {
+
+        }
+
+        public void BuildAST(Stack<Token> tokens)
+        {
+            if (Left == null)
+            {
+                Left = CreateNode(tokens.Pop());
+
+                if (Left.Type != TokenType.NUMBER && Left.Type != TokenType.BOOL)
+                {
+                    Left.BuildAST(tokens);
+                }
+            }
+
+            if (Right == null)
+            {
+                Right = CreateNode(tokens.Pop());
+                if (Right.Type != TokenType.NUMBER && Right.Type != TokenType.BOOL)
+                {
+                    Right.BuildAST(tokens);
+                }
+            }
         }
     }
 
