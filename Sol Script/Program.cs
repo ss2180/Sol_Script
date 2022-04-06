@@ -30,13 +30,12 @@ namespace Sol_Script
 
             Stack<Token> expression = parser.ConvertToPrefix(tokens);
 
-            
-            Node AST_Root = new Node(expression);
+
+            Node AST_Root = Node.Build(expression);
 
             Interpreter interpreter = new Interpreter();
 
             interpreter.InterpretExpression(AST_Root);
-            
 
             return 0;
         }

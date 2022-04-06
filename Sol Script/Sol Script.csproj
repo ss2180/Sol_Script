@@ -6,4 +6,8 @@
     <RootNamespace>Sol_Script</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="NodeOld.cs" />
+  </ItemGroup>
+
 </Project>

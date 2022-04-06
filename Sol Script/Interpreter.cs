@@ -40,8 +40,8 @@ namespace Sol_Script
                 return (expressionRoot as NumberNode).Value;
             }
 
-            float a = EvaluateNumericExpression(expressionRoot.Left);
-            float b = EvaluateNumericExpression(expressionRoot.Right);
+            float a = EvaluateNumericExpression((expressionRoot as OperatorNode).Left);
+            float b = EvaluateNumericExpression((expressionRoot as OperatorNode).Right);
 
             switch (expressionRoot.Type)
             {
@@ -77,8 +77,8 @@ namespace Sol_Script
                 case TokenType.LESS_OR_EQUAL:
                 case TokenType.GREATER:
                 case TokenType.GREATER_OR_EQUAL:
-                    float a = EvaluateNumericExpression(expressionRoot.Left);
-                    float b = EvaluateNumericExpression(expressionRoot.Left);
+                    float a = EvaluateNumericExpression((expressionRoot as OperatorNode).Left);
+                    float b = EvaluateNumericExpression((expressionRoot as OperatorNode).Right);
 
                     switch (expressionRoot.Type)
                     {
@@ -90,13 +90,17 @@ namespace Sol_Script
                             return a > b;
                         case TokenType.GREATER_OR_EQUAL:
                             return a >= b;
+                        default:
+                            throw new Exception($"Tree out of order, expectred boolean operator for numeric comparisons, recieved {expressionRoot.Type}");
                     }
-                    break;
 
                 case TokenType.EQUAL:
-                    return EvaluateBooleanExpression(expressionRoot.Left) == EvaluateBooleanExpression(expressionRoot.Right);
+                    return EvaluateBooleanExpression((expressionRoot as OperatorNode).Left) == EvaluateBooleanExpression((expressionRoot as OperatorNode).Right);
                 case TokenType.NOTEQUAL:
-                    return EvaluateBooleanExpression(expressionRoot.Left) != EvaluateBooleanExpression(expressionRoot.Right);
+                    return EvaluateBooleanExpression((expressionRoot as OperatorNode).Left) != EvaluateBooleanExpression((expressionRoot as OperatorNode).Right);
+
+                case TokenType.NOT:
+                    return !(EvaluateBooleanExpression((expressionRoot as UnaryNode).Next));
             }
 
             throw new Exception("You should not be here!");

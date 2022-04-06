@@ -1,44 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sol_Script
 {
-    class Node
+    abstract class Node
     {
         public TokenType Type { get; set; }
 
-        public Node(TokenType type)
+        protected Node(TokenType type)
         {
             Type = type;
         }
 
-        // Builds tree based off stack of prefix tokens.
-        public Node(Stack<Token> tokens)
+        abstract public void BuildAST(Stack<Token> tokens);
+
+        static public Node Build(Stack<Token> tokens)
         {
-            Type = tokens.Pop().Type;
+            Node node = CreateNode(tokens.Pop());
+
+            node.BuildAST(tokens);
+
+            return node;
         }
 
-        
-
-        public Node CreateNode(Token token)
+        static protected Node CreateNode(Token token)
         {
             Node node = null;
 
-            if (token.Type == TokenType.NUMBER)
+            switch(token.Type)
             {
-                node = new NumberNode(token.Type, int.Parse(token.TokenValue));
-            }
-            else if(token.Type == TokenType.BOOL)
-            {
-                node = new BoolNode(token.Type, bool.Parse(token.TokenValue));
-            }
-            else
-            {
-                node = new Node(token.Type);
+                case TokenType.NUMBER:
+                    node = new NumberNode(token.Type, int.Parse(token.TokenValue));
+                    break;
+                case TokenType.BOOL:
+                    node = new BoolNode(token.Type, bool.Parse(token.TokenValue));
+                    break;
+                case TokenType.NOT:
+                    node = new UnaryNode(token.Type);
+                    break;
+                default:
+                    node = new OperatorNode(token.Type);
+                    break;
             }
 
             return node;
+        }
+    }
+
+    class UnaryNode : Node
+    {
+        public Node Next { get; set; } = null;
+
+        public UnaryNode(TokenType type) : base(type)
+        {
+
+        }
+
+        public override void BuildAST(Stack<Token> tokens)
+        {
+            Next = CreateNode(tokens.Pop());
+            Next.BuildAST(tokens);
         }
     }
 
@@ -52,26 +76,14 @@ namespace Sol_Script
 
         }
 
-        public void BuildAST(Stack<Token> tokens)
+        public override void BuildAST(Stack<Token> tokens)
         {
-            if (Left == null)
-            {
-                Left = CreateNode(tokens.Pop());
+            Left = CreateNode(tokens.Pop());
+            Left.BuildAST(tokens);
 
-                if (Left.Type != TokenType.NUMBER && Left.Type != TokenType.BOOL)
-                {
-                    Left.BuildAST(tokens);
-                }
-            }
-
-            if (Right == null)
-            {
-                Right = CreateNode(tokens.Pop());
-                if (Right.Type != TokenType.NUMBER && Right.Type != TokenType.BOOL)
-                {
-                    Right.BuildAST(tokens);
-                }
-            }
+            Right = CreateNode(tokens.Pop());
+            Right.BuildAST(tokens);
+            
         }
     }
 
@@ -83,6 +95,11 @@ namespace Sol_Script
         {
             Value = value;
         }
+
+        public override void BuildAST(Stack<Token> tokens)
+        {
+            return;
+        }
     }
 
     class BoolNode : Node
@@ -92,6 +109,11 @@ namespace Sol_Script
         public BoolNode(TokenType type, bool value) : base(type)
         {
             Value = value;
+        }
+
+        public override void BuildAST(Stack<Token> tokens)
+        {
+            return;
         }
     }
 }
