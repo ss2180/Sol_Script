@@ -91,7 +91,7 @@ namespace Sol_Script
                         case TokenType.GREATER_OR_EQUAL:
                             return a >= b;
                         default:
-                            throw new Exception($"Tree out of order, expectred boolean operator for numeric comparisons, recieved {expressionRoot.Type}");
+                            throw new Exception($"Tree out of order, expected boolean operator for numeric comparisons, recieved {expressionRoot.Type}");
                     }
 
                 case TokenType.EQUAL:

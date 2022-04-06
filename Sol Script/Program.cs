@@ -25,7 +25,6 @@ namespace Sol_Script
 
             List<Token> tokens = scanner.Tokens;
 
-            
             Parser parser = new Parser();
 
             Stack<Token> expression = parser.ConvertToPrefix(tokens);
