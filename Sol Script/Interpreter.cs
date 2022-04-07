@@ -26,6 +26,7 @@ namespace Sol_Script
                     case TokenType.LESS_OR_EQUAL:
                     case TokenType.EQUAL:
                     case TokenType.NOTEQUAL:
+                    case TokenType.NOT:
                         Console.WriteLine("The result is: {0}", EvaluateBooleanExpression(expressionRoot));
                         break;
                     default:
@@ -36,9 +37,13 @@ namespace Sol_Script
 
         private float EvaluateNumericExpression(Node expressionRoot)
         {
-            if(expressionRoot is NumberNode)
+            if(expressionRoot is IntNumNode intNode)
             {
-                return (expressionRoot as NumberNode).Value;
+                return intNode.Value;
+            }
+            else if (expressionRoot is FloatNumNode floatNode)
+            {
+                return floatNode.Value;
             }
 
 

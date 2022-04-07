@@ -17,8 +17,10 @@ namespace Sol_Script
             {
                 switch (token.Type)
                 {
-                    case TokenType.NUMBER:
+                    case TokenType.INT_NUM:
+                    case TokenType.FLOAT_NUM:
                     case TokenType.BOOL:
+                    case TokenType.STRING:
                         OutputStack.Push(token);
                         break;
 

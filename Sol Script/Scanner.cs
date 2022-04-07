@@ -30,7 +30,7 @@ namespace Sol_Script
                         _tokens.Add(new Token(TokenType.MINUS, "-"));
                         index++;
                         // Check if '-' is a negation operator
-                        if (LastTokenType != TokenType.NUMBER && LastTokenType != TokenType.RIGHT_BRACKET)
+                        if (LastTokenType != TokenType.INT_NUM && LastTokenType != TokenType.RIGHT_BRACKET)
                         {
                             // Chage operator type to negation to be passed into shunting yard.
                             _tokens[_tokens.Count - 1].Type = TokenType.NEGATE;
@@ -104,8 +104,11 @@ namespace Sol_Script
                             index++;
                         }
                         break;
+                    case '"':
+                        index = ScanStringLiteral(line, index);
+                        break;
                     default:
-                        if (char.IsDigit(line[index]))
+                        if (char.IsDigit(line[index]) || line[index] == '.')
                         {
                             index = ScanNumber(line, index);
                         }
@@ -132,11 +135,22 @@ namespace Sol_Script
         {
             int nextIndex = index + 1;
             int numberCharLength = 1;
+            bool isFloat = false;
+
+            if (text[index] == '.')
+            {
+                isFloat = true;
+            }
 
             if (nextIndex < text.Length)
             {
-                while (char.IsDigit(text[nextIndex]))
+                while (char.IsDigit(text[nextIndex]) || text[nextIndex] == '.')
                 {
+                    if(text[nextIndex] == '.')
+                    {
+                        isFloat = true;
+                    }
+
                     nextIndex++;
                     numberCharLength++;
 
@@ -148,7 +162,15 @@ namespace Sol_Script
             }
 
             string numberString = text.Substring(index, numberCharLength);
-            _tokens.Add(new Token(TokenType.NUMBER, numberString));
+
+            if (isFloat)
+            {
+                _tokens.Add(new Token(TokenType.FLOAT_NUM, numberString));
+            }
+            else
+            {
+                _tokens.Add(new Token(TokenType.INT_NUM, numberString));
+            }
 
             return nextIndex;
         }
@@ -219,6 +241,32 @@ namespace Sol_Script
 
             string identiferString = text.Substring(index, tokenLength);
             _tokens.Add(new Token(TokenType.IDENTIFIER, identiferString));
+
+            return nextIndex;
+        }
+
+        private int ScanStringLiteral(string text, int index)
+        {
+            int nextIndex = index + 1;
+            int tokenLength = 1;
+
+            if (nextIndex < text.Length)
+            {
+                while(text[nextIndex] != '"')
+                {
+                    nextIndex++;
+                    tokenLength++;
+
+                    if (nextIndex >= text.Length)
+                    {
+                        throw new Exception("Missing closing '\"'.");
+                    }
+                }
+                nextIndex++;
+            }
+            // Add one to index to skip over first '"' character. Subtract 1 from token legnth to account for index shift.
+            string stringLiteral = text.Substring(index + 1, tokenLength - 1);
+            _tokens.Add(new Token(TokenType.STRING, stringLiteral));
 
             return nextIndex;
         }

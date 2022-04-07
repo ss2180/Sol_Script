@@ -7,7 +7,7 @@ namespace Sol_Script
     enum TokenType
     {
         // Literals
-        NUMBER, BOOL,
+        INT_NUM, FLOAT_NUM, BOOL, STRING,
 
         // Single Character Tokens
         PLUS, MINUS, DIVIDE, MULTIPLY, ASSIGN, LEFT_BRACKET, RIGHT_BRACKET, GREATER, LESS, NOT, NEGATE,

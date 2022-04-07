@@ -32,8 +32,11 @@ namespace Sol_Script
 
             switch(token.Type)
             {
-                case TokenType.NUMBER:
-                    node = new NumberNode(token.Type, int.Parse(token.TokenValue));
+                case TokenType.INT_NUM:
+                    node = new IntNumNode(token.Type, int.Parse(token.TokenValue));
+                    break;
+                case TokenType.FLOAT_NUM:
+                    node = new FloatNumNode(token.Type, float.Parse(token.TokenValue));
                     break;
                 case TokenType.BOOL:
                     node = new BoolNode(token.Type, bool.Parse(token.TokenValue));
@@ -88,11 +91,26 @@ namespace Sol_Script
         }
     }
 
-    class NumberNode : Node
+    class IntNumNode : Node
     {
         public int Value { get; set; }
 
-        public NumberNode(TokenType type, int value) : base(type)
+        public IntNumNode(TokenType type, int value) : base(type)
+        {
+            Value = value;
+        }
+
+        public override void BuildAST(Stack<Token> tokens)
+        {
+            return;
+        }
+    }
+
+    class FloatNumNode : Node
+    {
+        public float Value { get; set; }
+
+        public FloatNumNode(TokenType type, float value) : base(type)
         {
             Value = value;
         }
