@@ -8,7 +8,6 @@ namespace Sol_Script
     {
         private Stack<Token> OutputStack = new Stack<Token>();
         private Stack<Token> OperatorStack = new Stack<Token>();
-        private TokenType? LastTokenType = null;
 
         public Stack<Token> ConvertToPrefix(List<Token> tokens)
         {
@@ -21,7 +20,6 @@ namespace Sol_Script
                     case TokenType.NUMBER:
                     case TokenType.BOOL:
                         OutputStack.Push(token);
-                        LastTokenType = token.Type;
                         break;
 
                     case TokenType.PLUS:
@@ -35,22 +33,20 @@ namespace Sol_Script
                     case TokenType.EQUAL:
                     case TokenType.NOTEQUAL:
                     case TokenType.NOT:
+                    case TokenType.NEGATE:
                         HandleOperator(token);
-                        LastTokenType = token.Type;
                         break;
 
                     case TokenType.LEFT_BRACKET:
                         token.Type = TokenType.RIGHT_BRACKET;
                         token.TokenValue = ")";
                         HandleClosedBracket(token);
-                        LastTokenType = token.Type;
                         break;
 
                     case TokenType.RIGHT_BRACKET:
                         token.Type = TokenType.LEFT_BRACKET;
                         token.TokenValue = "(";
                         OperatorStack.Push(token);
-                        LastTokenType = token.Type;
                         break;
 
                     default:
@@ -70,13 +66,6 @@ namespace Sol_Script
 
         private void HandleOperator(Token token)
         {
-            // Check if '-' is a negation operator
-            if(LastTokenType != TokenType.NUMBER && LastTokenType != TokenType.RIGHT_BRACKET && token.Type == TokenType.MINUS)
-            {
-                // Chage operator type to negation to be passed into shunting yard.
-                token.Type = TokenType.NEGATE;
-            }
-
             if (OperatorStack.Count > 0)
             {
                 TokenType operatorTop = OperatorStack.Peek().Type;

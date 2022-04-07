@@ -7,6 +7,7 @@ namespace Sol_Script
     class Scanner
     {
         private List<Token> _tokens = new List<Token>();
+        private TokenType? LastTokenType = null;
 
         /// <summary>
         /// Scans a string for tokens and stores the tokens in a instanced array.
@@ -28,6 +29,12 @@ namespace Sol_Script
                     case '-':
                         _tokens.Add(new Token(TokenType.MINUS, "-"));
                         index++;
+                        // Check if '-' is a negation operator
+                        if (LastTokenType != TokenType.NUMBER && LastTokenType != TokenType.RIGHT_BRACKET)
+                        {
+                            // Chage operator type to negation to be passed into shunting yard.
+                            _tokens[_tokens.Count - 1].Type = TokenType.NEGATE;
+                        }
                         break;
                     case '+':
                         _tokens.Add(new Token(TokenType.PLUS, "+"));
@@ -112,6 +119,8 @@ namespace Sol_Script
                         }
                         break;
                 }
+
+                LastTokenType = _tokens[_tokens.Count - 1].Type;
             }
         }
 
