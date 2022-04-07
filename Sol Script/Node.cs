@@ -41,6 +41,9 @@ namespace Sol_Script
                 case TokenType.BOOL:
                     node = new BoolNode(token.Type, bool.Parse(token.TokenValue));
                     break;
+                case TokenType.STRING:
+                    node = new StringNode(token.Type, token.TokenValue);
+                    break;
                 case TokenType.NOT:
                 case TokenType.NEGATE:
                     node = new UnaryNode(token.Type);
@@ -126,6 +129,21 @@ namespace Sol_Script
         public bool Value { get; set; }
 
         public BoolNode(TokenType type, bool value) : base(type)
+        {
+            Value = value;
+        }
+
+        public override void BuildAST(Stack<Token> tokens)
+        {
+            return;
+        }
+    }
+
+    class StringNode : Node
+    {
+        public string Value { get; set; }
+
+        public StringNode(TokenType type, string value) : base(type)
         {
             Value = value;
         }
