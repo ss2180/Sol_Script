@@ -39,6 +39,7 @@ namespace Sol_Script
                     node = new BoolNode(token.Type, bool.Parse(token.TokenValue));
                     break;
                 case TokenType.NOT:
+                case TokenType.NEGATE:
                     node = new UnaryNode(token.Type);
                     break;
                 default:

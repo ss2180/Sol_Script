@@ -16,6 +16,7 @@ namespace Sol_Script
                     case TokenType.MINUS:
                     case TokenType.DIVIDE:
                     case TokenType.MULTIPLY:
+                    case TokenType.NEGATE:
                         // For now print the result for testing, once more functionality is added, implement print keyword to display output.
                         Console.WriteLine("The result is: {0}", EvaluateNumericExpression(expressionRoot));
                         break;
@@ -40,28 +41,46 @@ namespace Sol_Script
                 return (expressionRoot as NumberNode).Value;
             }
 
-            float a = EvaluateNumericExpression((expressionRoot as OperatorNode).Left);
-            float b = EvaluateNumericExpression((expressionRoot as OperatorNode).Right);
 
-            switch (expressionRoot.Type)
+            if (expressionRoot is OperatorNode)
             {
-                case TokenType.PLUS:
-                    return a + b;
+                float a = EvaluateNumericExpression((expressionRoot as OperatorNode).Left);
+                float b = EvaluateNumericExpression((expressionRoot as OperatorNode).Right);
 
-                case TokenType.MINUS:
-                    return a - b;
+                switch (expressionRoot.Type)
+                {
+                    case TokenType.PLUS:
+                        return a + b;
 
-                case TokenType.MULTIPLY:
-                    return a * b;
+                    case TokenType.MINUS:
+                        return a - b;
 
-                case TokenType.DIVIDE:
-                    return a / b;
+                    case TokenType.MULTIPLY:
+                        return a * b;
 
-                default:
-                    throw new Exception("You should not be here!");
+                    case TokenType.DIVIDE:
+                        return a / b;
+
+                    default:
+                        throw new Exception("You should not be here!");
+                }
             }
+            else if(expressionRoot is UnaryNode)
+            {
+                float a = EvaluateNumericExpression((expressionRoot as UnaryNode).Next);
 
-            
+                switch(expressionRoot.Type)
+                {
+                    case TokenType.NEGATE:
+                        return -a;
+                    default:
+                        throw new Exception("You should not be here!");
+                }
+            }
+            else
+            {
+                throw new Exception("Unexpected node type, expected Operator or Unary node!");
+            }
         }
 
         private bool EvaluateBooleanExpression(Node expressionRoot)
