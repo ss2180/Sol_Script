@@ -32,9 +32,11 @@ namespace Sol_Script
 
             Node AST_Root = Node.Build(expression);
 
-            Interpreter interpreter = new Interpreter();
+            //Interpreter interpreter = new Interpreter();
 
-            interpreter.InterpretExpression(AST_Root);
+            //interpreter.InterpretExpression(AST_Root);
+
+            Console.WriteLine($"The Result is: {AST_Root.Evaluate()}");
 
             return 0;
         }

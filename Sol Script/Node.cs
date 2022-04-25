@@ -16,6 +16,7 @@ namespace Sol_Script
         }
 
         abstract public void BuildAST(Stack<Token> tokens);
+        abstract public object Evaluate();
 
         static public Node Build(Stack<Token> tokens)
         {
@@ -71,6 +72,43 @@ namespace Sol_Script
             Next = CreateNode(tokens.Pop());
             Next.BuildAST(tokens);
         }
+
+        public override object Evaluate()
+        {
+            object a = Next.Evaluate();
+
+            if(a is int intVal)
+            {
+                if (Type == TokenType.NEGATE)
+                {
+                    return -intVal;
+                }
+
+                throw new Exception("Expected NEGATE operator");
+            }
+            else if(a is float floatVal)
+            {
+                if (Type == TokenType.NEGATE)
+                {
+                    return -floatVal;
+                }
+
+                throw new Exception("Expected NEGATE operator");
+            }
+            else if(a is bool boolVal)
+            {
+                if(Type == TokenType.NOT)
+                {
+                    return !boolVal;
+                }
+
+                throw new Exception("Expected NOT operator");
+            }
+            else
+            {
+                throw new Exception($"Unexpected Type: {Type}");
+            }
+        }
     }
 
     class OperatorNode : Node
@@ -92,6 +130,147 @@ namespace Sol_Script
             Right.BuildAST(tokens);
             
         }
+
+        public override object Evaluate()
+        {
+            switch (Type)
+            {
+                case TokenType.PLUS:
+                case TokenType.MINUS:
+                case TokenType.DIVIDE:
+                case TokenType.MULTIPLY:
+                    return EvaluateMathematicalOperator();
+                case TokenType.GREATER:
+                case TokenType.LESS:
+                case TokenType.GREATER_OR_EQUAL:
+                case TokenType.LESS_OR_EQUAL:
+                case TokenType.EQUAL:
+                case TokenType.NOTEQUAL:
+                    return EvaluateBooleanOperator();
+                default:
+                    throw new Exception($"Unexpected operator {Type}");
+            }
+        }
+
+        private object EvaluateMathematicalOperator()
+        {
+            object a = Left.Evaluate();
+            object b = Right.Evaluate();
+
+            if(a is int)
+            {
+                int val1 = (int)a;
+                int val2 = (int)b;
+
+                switch (Type)
+                {
+                    case TokenType.PLUS:
+                        return val1 + val2;
+
+                    case TokenType.MINUS:
+                        return val1 - val2;
+
+                    case TokenType.MULTIPLY:
+                        return val1 * val2;
+
+                    case TokenType.DIVIDE:
+                        return val1 / val2;
+
+                    default:
+                        throw new Exception("You should not be here!");
+                }
+            }
+            else if (a is float)
+            {
+                float val1 = (float)a;
+                float val2 = (float)b;
+
+                switch (Type)
+                {
+                    case TokenType.PLUS:
+                        return val1 + val2;
+
+                    case TokenType.MINUS:
+                        return val1 - val2;
+
+                    case TokenType.MULTIPLY:
+                        return val1 * val2;
+
+                    case TokenType.DIVIDE:
+                        return val1 / val2;
+
+                    default:
+                        throw new Exception("You should not be here!");
+                }
+            }
+            else
+            {
+                throw new Exception($"Unexpected types for {Type} node, Left:{a.GetType()} Right{b.GetType()}");
+            }
+        }
+
+        private object EvaluateBooleanOperator()
+        {
+            switch (Type)
+            {
+                case TokenType.LESS:
+                case TokenType.LESS_OR_EQUAL:
+                case TokenType.GREATER:
+                case TokenType.GREATER_OR_EQUAL:
+                    object a = Left.Evaluate();
+                    object b = Right.Evaluate();
+
+                    if (a is int)
+                    {
+                        int val1 = (int)a;
+                        int val2 = (int)b;
+
+                        switch (Type)
+                        {
+                            case TokenType.LESS:
+                                return val1 < val2;
+                            case TokenType.LESS_OR_EQUAL:
+                                return val1 <= val2;
+                            case TokenType.GREATER:
+                                return val1 > val2;
+                            case TokenType.GREATER_OR_EQUAL:
+                                return val1 >= val2;
+                            default:
+                                throw new Exception($"Tree out of order, expected boolean operator for numeric comparisons, recieved {Type}");
+                        }
+                    }
+                    else if (a is float)
+                    {
+                        float val1 = (float)a;
+                        float val2 = (float)b;
+
+                        switch (Type)
+                        {
+                            case TokenType.LESS:
+                                return val1 < val2;
+                            case TokenType.LESS_OR_EQUAL:
+                                return val1 <= val2;
+                            case TokenType.GREATER:
+                                return val1 > val2;
+                            case TokenType.GREATER_OR_EQUAL:
+                                return val1 >= val2;
+                            default:
+                                throw new Exception($"Tree out of order, expected boolean operator for numeric comparisons, recieved {Type}");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception($"Unexpected types for {Type} node, Left:{a.GetType()} Right{b.GetType()}");
+                    }
+
+                case TokenType.EQUAL:
+                    return (bool)Left.Evaluate() == (bool)Right.Evaluate();
+                case TokenType.NOTEQUAL:
+                    return (bool)Left.Evaluate() != (bool)Right.Evaluate();
+                default:
+                    throw new Exception($"Unexpected token type {Type}");
+            }
+        }
     }
 
     class IntNumNode : Node
@@ -106,6 +285,11 @@ namespace Sol_Script
         public override void BuildAST(Stack<Token> tokens)
         {
             return;
+        }
+
+        public override object Evaluate()
+        {
+            return Value;
         }
     }
 
@@ -122,6 +306,11 @@ namespace Sol_Script
         {
             return;
         }
+
+        public override object Evaluate()
+        {
+            return Value;
+        }
     }
 
     class BoolNode : Node
@@ -137,6 +326,11 @@ namespace Sol_Script
         {
             return;
         }
+
+        public override object Evaluate()
+        {
+            return Value;
+        }
     }
 
     class StringNode : Node
@@ -151,6 +345,11 @@ namespace Sol_Script
         public override void BuildAST(Stack<Token> tokens)
         {
             return;
+        }
+
+        public override object Evaluate()
+        {
+            return Value;
         }
     }
 }

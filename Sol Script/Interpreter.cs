@@ -102,7 +102,7 @@ namespace Sol_Script
                 case TokenType.GREATER:
                 case TokenType.GREATER_OR_EQUAL:
                     float a = EvaluateNumericExpression((expressionRoot as OperatorNode).Left);
-                    float b = EvaluateNumericExpression((expressionRoot as OperatorNode).Right);
+                    float b = (float)EvaluateNumericExpression((expressionRoot as OperatorNode).Right);
 
                     switch (expressionRoot.Type)
                     {
