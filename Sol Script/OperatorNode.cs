@@ -74,6 +74,23 @@ namespace Sol_Script
 
                 throw new Exception($"Expected right operand to be either int or float, recieved {b.GetType()}");
             }
+            else if( a is string)
+            {
+                if(b is string)
+                {
+                    if (Type == TokenType.PLUS)
+                    {
+                        string val1 = (string)a;
+                        string val2 = (string)b;
+
+                        return val1 + val2;
+                    }
+
+                    throw new Exception($"Unexpected operator on string {Type}, did you mean to concatenate?");
+                }
+
+                throw new Exception($"Expected right operand to be a string, recieved {b.GetType()}");
+            }
             else
             {
                 throw new Exception($"Unexpected types for {Type} node, Left:{a.GetType()} Right{b.GetType()}");
@@ -286,9 +303,32 @@ namespace Sol_Script
                     {
                         return val1 != val2;
                     }
+
+                    throw new Exception($"Expected operator type to be EQUALITY or INEQUALITY, recieved {type}");
                 }
 
                 throw new Exception($"Expected right operand to be either int or float, recieved {b.GetType()}");
+            }
+            else if(a is string)
+            {
+                if(b is string)
+                {
+                    string val1 = (string)a;
+                    string val2 = (string)b;
+
+                    if (type == TokenType.EQUAL)
+                    {
+                        return val1 == val2;
+                    }
+                    else if (type == TokenType.NOTEQUAL)
+                    {
+                        return val1 != val2;
+                    }
+
+                    throw new Exception($"Expected operator type to be EQUALITY or INEQUALITY, recieved {type}");
+                }
+
+                throw new Exception($"Expected right operand to be a string, recieved {b.GetType()}");
             }
 
             throw new Exception($"Unexpected types for {Type} node, Left:{a.GetType()} Right{b.GetType()}");
