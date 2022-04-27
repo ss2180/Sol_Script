@@ -36,7 +36,14 @@ namespace Sol_Script
 
             //interpreter.InterpretExpression(AST_Root);
 
-            Console.WriteLine($"The Result is: {AST_Root.Evaluate()}");
+            try
+            {
+                Console.WriteLine($"The Result is: {AST_Root.Evaluate()}");
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"Error: {e.Message}");
+            }
 
             return 0;
         }

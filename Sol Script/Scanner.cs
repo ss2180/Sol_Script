@@ -30,7 +30,7 @@ namespace Sol_Script
                         _tokens.Add(new Token(TokenType.MINUS, "-"));
                         index++;
                         // Check if '-' is a negation operator
-                        if (LastTokenType != TokenType.INT_NUM && LastTokenType != TokenType.RIGHT_BRACKET)
+                        if (LastTokenType != TokenType.INT_NUM && LastTokenType != TokenType.FLOAT_NUM && LastTokenType != TokenType.RIGHT_BRACKET)
                         {
                             // Chage operator type to negation to be passed into shunting yard.
                             _tokens[_tokens.Count - 1].Type = TokenType.NEGATE;
