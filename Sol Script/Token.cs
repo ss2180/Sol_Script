@@ -16,7 +16,10 @@ namespace Sol_Script
         EQUAL, NOTEQUAL, GREATER_OR_EQUAL, LESS_OR_EQUAL,
 
         //Identifier
-        IDENTIFIER
+        IDENTIFIER,
+
+        //Keywords
+        PRINT
     }
 
     class Token

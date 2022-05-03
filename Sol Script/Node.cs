@@ -47,6 +47,7 @@ namespace Sol_Script
                     break;
                 case TokenType.NOT:
                 case TokenType.NEGATE:
+                case TokenType.PRINT:
                     node = new UnaryNode(token.Type);
                     break;
                 default:
@@ -77,36 +78,37 @@ namespace Sol_Script
         {
             object a = Next.Evaluate();
 
-            if(a is int intVal)
+            if(Type == TokenType.NEGATE)
             {
-                if (Type == TokenType.NEGATE)
+                if(a is int intval)
                 {
-                    return -intVal;
+                    return -intval;
+                }
+                else if(a is float floatval)
+                {
+                    return -floatval;
                 }
 
-                throw new Exception("Expected NEGATE operator");
+                throw new Exception($"Can not negate type: {a.GetType()}");
             }
-            else if(a is float floatVal)
+            else if(Type == TokenType.NOT)
             {
-                if (Type == TokenType.NEGATE)
-                {
-                    return -floatVal;
-                }
-
-                throw new Exception("Expected NEGATE operator");
-            }
-            else if(a is bool boolVal)
-            {
-                if(Type == TokenType.NOT)
+                if(a is bool boolVal)
                 {
                     return !boolVal;
                 }
 
-                throw new Exception("Expected NOT operator");
+                throw new Exception($"Expected bool value, received {a.GetType()}");
+            }
+            else if(Type == TokenType.PRINT)
+            {
+                Console.WriteLine(a);
+
+                return 0;
             }
             else
             {
-                throw new Exception($"Unexpected Type: {Type}");
+                throw new Exception($"Type is not a unary type: {Type}");
             }
         }
     }

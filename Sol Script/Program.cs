@@ -27,14 +27,12 @@ namespace Sol_Script
 
             Parser parser = new Parser();
 
-            Stack<Token> expression = parser.ConvertToPrefix(tokens);
-
-
-            Node AST_Root = Node.Build(expression);
-
+            
             try
             {
-                Console.WriteLine($"The Result is: {AST_Root.Evaluate()}");
+                Stack<Token> expression = parser.Parse(tokens);
+                Node AST_Root = Node.Build(expression);
+                AST_Root.Evaluate();
             }
             catch(Exception e)
             {

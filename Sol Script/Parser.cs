@@ -9,7 +9,59 @@ namespace Sol_Script
         private Stack<Token> OutputStack = new Stack<Token>();
         private Stack<Token> OperatorStack = new Stack<Token>();
 
-        public Stack<Token> ConvertToPrefix(List<Token> tokens)
+        public Stack<Token> Parse(List<Token> tokens)
+        {
+            Token token = tokens[0];
+            List<Token> expression = new List<Token>();
+            
+            switch(token.Type)
+            {
+                case TokenType.IDENTIFIER:
+                    throw new Exception("NOT IMPLEMENTED");
+
+                case TokenType.PRINT:
+                    if(tokens[1].Type == TokenType.LEFT_BRACKET)
+                    {
+                        Token currentToken = tokens[2];
+                        int leftBracketCount = 0;
+
+                        for(int i = 3; currentToken.Type != TokenType.RIGHT_BRACKET || leftBracketCount != 0; i++)
+                        {
+                            if(i > tokens.Count)
+                            {
+                                throw new Exception("Missing right parenthesis");
+                            }
+                            if(currentToken.Type == TokenType.LEFT_BRACKET)
+                            {
+                                leftBracketCount++;
+                            }
+                            else if(currentToken.Type == TokenType.RIGHT_BRACKET)
+                            {
+                                leftBracketCount--;
+                            }
+
+                            expression.Add(currentToken);
+                            currentToken = tokens[i];
+                        }
+
+                        if (expression.Count != 0)
+                        {
+                            Stack<Token> tokenStack = ConvertToPrefix(expression);
+                            tokenStack.Push(token);
+
+                            return tokenStack;
+                        }
+
+                        throw new Exception("Missing expression for print statement");
+                    }
+                    throw new Exception("Expected parenthesis after print statement");
+
+                default:
+                    throw new Exception($"Unexpected token: {token.Type}");
+            }
+        }
+
+        private Stack<Token> ConvertToPrefix(List<Token> tokens)
         {
             tokens.Reverse();
 

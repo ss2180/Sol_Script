@@ -212,6 +212,20 @@ namespace Sol_Script
                         }
                     }
                     break;
+                case 'p':
+                    if (index + 4 < EOF)
+                    {
+                        if(text.Substring(index, 5) == "print")
+                        {
+                            _tokens.Add(new Token(TokenType.PRINT, "print"));
+                            index += 5;
+                        }
+                        else
+                        {
+                            index = ScanIdentifier(text, index);
+                        }
+                    }
+                    break;
                 default:
                     index = ScanIdentifier(text, index);
                     break;
