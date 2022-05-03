@@ -1,2 +1,1 @@
-print("Hello, World!")
-print(4 + 2)
+x = 23 + 4

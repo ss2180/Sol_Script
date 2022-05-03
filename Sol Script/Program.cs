@@ -37,21 +37,9 @@ namespace Sol_Script
                 }
             }
 
-            Parser parser = new Parser();
+            Scope main = new Scope(listOfStatements);
 
-            try
-            {
-                foreach (List<Token> statement in listOfStatements)
-                {
-                    Stack<Token> expression = parser.Parse(statement);
-                    Node AST_Root = Node.Build(expression);
-                    AST_Root.Evaluate();
-                }
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine($"Error: {e.Message}");
-            }
+            main.Run();
 
             return 0;
         }

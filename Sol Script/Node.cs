@@ -10,6 +10,8 @@ namespace Sol_Script
     {
         public TokenType Type { get; set; }
 
+        protected Scope scope;
+
         protected Node(TokenType type)
         {
             Type = type;
@@ -18,9 +20,11 @@ namespace Sol_Script
         abstract public void BuildAST(Stack<Token> tokens);
         abstract public object Evaluate();
 
-        static public Node Build(Stack<Token> tokens)
+        static public Node Build(Stack<Token> tokens, Scope scope)
         {
             Node node = CreateNode(tokens.Pop());
+
+            node.scope = scope;
 
             node.BuildAST(tokens);
 
@@ -44,6 +48,9 @@ namespace Sol_Script
                     break;
                 case TokenType.STRING:
                     node = new StringNode(token.Type, token.TokenValue);
+                    break;
+                case TokenType.IDENTIFIER:
+                    node = new IdentifierNode(token.Type, token.TokenValue);
                     break;
                 case TokenType.NOT:
                 case TokenType.NEGATE:
@@ -192,6 +199,26 @@ namespace Sol_Script
         public override object Evaluate()
         {
             return Value;
+        }
+    }
+
+    class IdentifierNode : Node
+    {
+        public string Name { get; set; }
+
+        public IdentifierNode(TokenType type, string name) : base(type)
+        {
+            Name = name;
+        }
+
+        public override void BuildAST(Stack<Token> tokens)
+        {
+            return;
+        }
+
+        public override object Evaluate()
+        {
+            return Name;
         }
     }
 }

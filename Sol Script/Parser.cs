@@ -17,7 +17,19 @@ namespace Sol_Script
             switch(token.Type)
             {
                 case TokenType.IDENTIFIER:
-                    throw new Exception("NOT IMPLEMENTED");
+                    if(tokens[1].Type == TokenType.ASSIGN)
+                    {
+                        expression = tokens.GetRange(2, tokens.Count - 2);
+                        Stack<Token> tokenStack = ConvertToPrefix(expression);
+
+                        // Push assignment and identifer back onto stack.
+                        tokenStack.Push(tokens[0]);
+                        tokenStack.Push(tokens[1]);
+
+                        return tokenStack;
+                    }
+
+                    throw new Exception("Expected assignment after identifier");
 
                 case TokenType.PRINT:
                     if(tokens[1].Type == TokenType.LEFT_BRACKET)

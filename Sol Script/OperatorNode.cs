@@ -42,9 +42,32 @@ namespace Sol_Script
                 case TokenType.EQUAL:
                 case TokenType.NOTEQUAL:
                     return EvaluateBooleanOperator();
+                case TokenType.ASSIGN:
+                    return HandleAssignment(scope);
                 default:
                     throw new Exception($"Unexpected operator {Type}");
             }
+        }
+
+        private object HandleAssignment(Scope scope)
+        {
+            object variable = Left.Evaluate();
+            object expression = Right.Evaluate();
+
+            if(variable is string inode)
+            {
+                if (scope.variables.TryGetValue(inode, out _))
+                {
+                    scope.variables[inode] = expression;
+                }
+                else
+                {
+                    scope.variables.Add(inode, expression);
+                }
+
+                return 0;
+            }
+            throw new Exception("Missing identifier for assignment");
         }
 
         private object EvaluateMathematicalOperator()
