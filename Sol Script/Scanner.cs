@@ -107,6 +107,13 @@ namespace Sol_Script
                     case '"':
                         index = ScanStringLiteral(line, index);
                         break;
+                    case '\n':
+                        _tokens.Add(new Token(TokenType.NEWLINE, "\n"));
+                        index++;
+                        break;
+                    case '\r':
+                        index++;
+                        break;
                     default:
                         if (char.IsDigit(line[index]) || line[index] == '.')
                         {
@@ -125,6 +132,7 @@ namespace Sol_Script
 
                 LastTokenType = _tokens[_tokens.Count - 1].Type;
             }
+            Tokens.Add(new Token(TokenType.EOF, "EOF"));
         }
 
         /// <summary>
