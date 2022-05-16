@@ -85,6 +85,7 @@ namespace Sol_Script
                     case TokenType.FLOAT_NUM:
                     case TokenType.BOOL:
                     case TokenType.STRING:
+                    case TokenType.IDENTIFIER:
                         OutputStack.Push(token);
                         break;
 

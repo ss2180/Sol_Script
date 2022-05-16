@@ -19,9 +19,11 @@ namespace Sol_Script
         public override void BuildAST(Stack<Token> tokens)
         {
             Left = CreateNode(tokens.Pop());
+            Left.Scope = Scope;
             Left.BuildAST(tokens);
 
             Right = CreateNode(tokens.Pop());
+            Right.Scope = Scope;
             Right.BuildAST(tokens);
 
         }
@@ -43,26 +45,25 @@ namespace Sol_Script
                 case TokenType.NOTEQUAL:
                     return EvaluateBooleanOperator();
                 case TokenType.ASSIGN:
-                    return HandleAssignment(scope);
+                    return HandleAssignment();
                 default:
                     throw new Exception($"Unexpected operator {Type}");
             }
         }
 
-        private object HandleAssignment(Scope scope)
+        private object HandleAssignment()
         {
-            object variable = Left.Evaluate();
             object expression = Right.Evaluate();
 
-            if(variable is string inode)
+            if(Left is IdentifierNode inode)
             {
-                if (scope.variables.TryGetValue(inode, out _))
+                if (Scope.variables.TryGetValue(inode.Name, out _))
                 {
-                    scope.variables[inode] = expression;
+                    Scope.variables[inode.Name] = expression;
                 }
                 else
                 {
-                    scope.variables.Add(inode, expression);
+                    Scope.variables.Add(inode.Name, expression);
                 }
 
                 return 0;

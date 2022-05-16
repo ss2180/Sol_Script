@@ -10,7 +10,7 @@ namespace Sol_Script
     {
         public TokenType Type { get; set; }
 
-        protected Scope scope;
+        public Scope Scope;
 
         protected Node(TokenType type)
         {
@@ -23,8 +23,7 @@ namespace Sol_Script
         static public Node Build(Stack<Token> tokens, Scope scope)
         {
             Node node = CreateNode(tokens.Pop());
-
-            node.scope = scope;
+            node.Scope = scope;
 
             node.BuildAST(tokens);
 
@@ -78,6 +77,7 @@ namespace Sol_Script
         public override void BuildAST(Stack<Token> tokens)
         {
             Next = CreateNode(tokens.Pop());
+            Next.Scope = Scope;
             Next.BuildAST(tokens);
         }
 
@@ -218,7 +218,7 @@ namespace Sol_Script
 
         public override object Evaluate()
         {
-            return Name;
+            return Scope.variables[Name];
         }
     }
 }
