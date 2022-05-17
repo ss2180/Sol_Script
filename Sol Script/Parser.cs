@@ -67,8 +67,45 @@ namespace Sol_Script
                         throw new Exception("Missing expression for print statement");
                     }
                     throw new Exception("Expected parenthesis after print statement");
+                case TokenType.IF:
+                    if (tokens[1].Type == TokenType.LEFT_BRACKET)
+                    {
+                        Token currentToken = tokens[2];
+                        int leftBracketCount = 0;
 
-                default:
+                        for (int i = 3; currentToken.Type != TokenType.RIGHT_BRACKET || leftBracketCount != 0; i++)
+                        {
+                            if (i > tokens.Count)
+                            {
+                                throw new Exception("Missing right parenthesis");
+                            }
+                            if (currentToken.Type == TokenType.LEFT_BRACKET)
+                            {
+                                leftBracketCount++;
+                            }
+                            else if (currentToken.Type == TokenType.RIGHT_BRACKET)
+                            {
+                                leftBracketCount--;
+                            }
+
+                            expression.Add(currentToken);
+                            currentToken = tokens[i];
+                        }
+
+                        if (expression.Count != 0)
+                        {
+                            Stack<Token> tokenStack = ConvertToPrefix(expression);
+                            tokenStack.Push(token);
+
+                            return tokenStack;
+                        }
+
+                        throw new Exception("Missing expression for if statement");
+                    }
+                    throw new Exception("Expected parenthesis after if statement");
+
+
+                        default:
                     throw new Exception($"Unexpected token: {token.Type}");
             }
         }

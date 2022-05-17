@@ -32,7 +32,13 @@ namespace Sol_Script
                 if (tokens[i].Type == TokenType.NEWLINE || tokens[i].Type == TokenType.EOF)
                 {
                     int endIndex = i;
-                    listOfStatements.Add(new List<Token>(tokens.GetRange(startIndex, endIndex - startIndex)));
+
+                    // if there are no tokens before newline then it is a blank line.
+                    if (endIndex - startIndex != 0)
+                    {
+                        listOfStatements.Add(new List<Token>(tokens.GetRange(startIndex, endIndex - startIndex)));
+                    }
+
                     startIndex = i + 1;
                 }
             }
@@ -40,6 +46,9 @@ namespace Sol_Script
             Scope main = new Scope(listOfStatements);
 
             main.Run();
+
+            Console.WriteLine("Press any key to close.");
+            Console.ReadKey();
 
             return 0;
         }

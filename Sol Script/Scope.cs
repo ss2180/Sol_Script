@@ -11,6 +11,8 @@ namespace Sol_Script
         public Dictionary<string, object> variables { get; set; }
         public List<List<Token>> statements { get; set; }
 
+        private Parser parser = new Parser();
+
         public Scope(List<List<Token>> listOfStatements)
         {
             statements = listOfStatements;
@@ -19,21 +21,70 @@ namespace Sol_Script
 
         public void Run()
         {
-            Parser parser = new Parser();
-
             try
             {
-                foreach (List<Token> statement in statements)
+                for (int i = 0; i < statements.Count; i++)
                 {
-                    Stack<Token> expression = parser.Parse(statement);
-                    Node AST_Root = Node.Build(expression, this);
-                    AST_Root.Evaluate();
+                    switch (statements[i][0].Type)
+                    {
+                        case TokenType.IF:
+                            i = HandleIf(statements, i);
+                            break;
+                        default:
+                            Stack<Token> expression = parser.Parse(statements[i]);
+                            Node AST_Root = Node.Build(expression, this);
+                            AST_Root.Evaluate();
+                            break;
+                    }
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Error: {e.Message}");
             }
+        }
+
+        private int HandleIf(List<List<Token>> statements, int index)
+        {
+            Stack<Token> expression = parser.Parse(statements[index]);
+            Node AST_Root = Node.Build(expression, this);
+            bool ifResult = (bool)AST_Root.Evaluate();
+
+            int ifStatementCounter = 1;
+
+            List<List<Token>> newStatements = new List<List<Token>>();
+
+            index++;
+            while (index < statements.Count && ifStatementCounter != 0)
+            {
+                if(statements[index][0].Type == TokenType.LEFT_CURLY_BRACE)
+                {
+                    index++;
+                    continue;
+                }
+                else if(statements[index][0].Type == TokenType.RIGHT_CURLY_BRACE)
+                {
+                    ifStatementCounter--;
+                    index++;
+                    continue;
+                }
+                else if(statements[index][0].Type == TokenType.IF)
+                {
+                    ifStatementCounter++;
+                }
+
+                newStatements.Add(statements[index]);
+
+                index++;
+            }
+
+            if(ifResult)
+            {
+                Scope ifScope = new Scope(newStatements);
+                ifScope.Run();
+            }
+
+            return index;
         }
     }
 }

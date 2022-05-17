@@ -54,6 +54,7 @@ namespace Sol_Script
                 case TokenType.NOT:
                 case TokenType.NEGATE:
                 case TokenType.PRINT:
+                case TokenType.IF:
                     node = new UnaryNode(token.Type);
                     break;
                 default:
@@ -112,6 +113,14 @@ namespace Sol_Script
                 Console.WriteLine(a);
 
                 return 0;
+            }
+            else if(Type == TokenType.IF)
+            {
+                if(a is bool boolVal)
+                {
+                    return boolVal;
+                }
+                throw new Exception($"Expected bool value, received {a.GetType()}");
             }
             else
             {

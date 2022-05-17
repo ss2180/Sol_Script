@@ -114,6 +114,14 @@ namespace Sol_Script
                     case '\r':
                         index++;
                         break;
+                    case '{':
+                        _tokens.Add(new Token(TokenType.LEFT_CURLY_BRACE, "{"));
+                        index++;
+                        break;
+                    case '}':
+                        _tokens.Add(new Token(TokenType.RIGHT_CURLY_BRACE, "}"));
+                        index++;
+                        break;
                     default:
                         if (char.IsDigit(line[index]) || line[index] == '.')
                         {
@@ -130,7 +138,11 @@ namespace Sol_Script
                         break;
                 }
 
-                LastTokenType = _tokens[_tokens.Count - 1].Type;
+                // Only set LastTokenType when there are tokens in _tokens
+                if (_tokens.Count != 0)
+                {
+                    LastTokenType = _tokens[_tokens.Count - 1].Type;
+                }
             }
             Tokens.Add(new Token(TokenType.EOF, "EOF"));
         }
@@ -193,7 +205,7 @@ namespace Sol_Script
                 case 't':
                     if(index + 3 < EOF)
                     {
-                        if(text.Substring(index, 4).ToLower() == "true")
+                        if(text.Substring(index, 4).ToLower() == "true" && !char.IsLetterOrDigit(text[index + 4]))
                         {
                             _tokens.Add(new Token(TokenType.BOOL, "true"));
                             index += 4;
@@ -209,7 +221,7 @@ namespace Sol_Script
                 case 'f':
                     if (index + 4 < EOF)
                     {
-                        if (text.Substring(index, 5).ToLower() == "false")
+                        if (text.Substring(index, 5).ToLower() == "false" && !char.IsLetterOrDigit(text[index + 5]))
                         {
                             _tokens.Add(new Token(TokenType.BOOL, "false"));
                             index += 5;
@@ -223,10 +235,24 @@ namespace Sol_Script
                 case 'p':
                     if (index + 4 < EOF)
                     {
-                        if(text.Substring(index, 5) == "print")
+                        if(text.Substring(index, 5) == "print" && !char.IsLetterOrDigit(text[index + 5]))
                         {
                             _tokens.Add(new Token(TokenType.PRINT, "print"));
                             index += 5;
+                        }
+                        else
+                        {
+                            index = ScanIdentifier(text, index);
+                        }
+                    }
+                    break;
+                case 'i':
+                    if(index + 1 < EOF)
+                    {
+                        if(text.Substring(index, 2) == "if" && !char.IsLetterOrDigit(text[index + 2]))
+                        {
+                            _tokens.Add(new Token(TokenType.IF, "if"));
+                            index += 2;
                         }
                         else
                         {
