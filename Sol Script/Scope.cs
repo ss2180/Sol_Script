@@ -28,12 +28,16 @@ namespace Sol_Script
                     switch (statements[i][0].Type)
                     {
                         case TokenType.IF:
-                            i = HandleIf(statements, i);
+                            i = HandleIf(statements, i) - 1;
                             break;
                         default:
-                            Stack<Token> expression = parser.Parse(statements[i]);
-                            Node AST_Root = Node.Build(expression, this);
-                            AST_Root.Evaluate();
+                            
+                            if (statements[i][0].Type != TokenType.LEFT_CURLY_BRACE && statements[i][0].Type != TokenType.RIGHT_CURLY_BRACE)
+                            {
+                                Stack<Token> expression = parser.Parse(statements[i]);
+                                Node AST_Root = Node.Build(expression, this);
+                                AST_Root.Evaluate();
+                            }
                             break;
                     }
                 }
@@ -57,16 +61,9 @@ namespace Sol_Script
             index++;
             while (index < statements.Count && ifStatementCounter != 0)
             {
-                if(statements[index][0].Type == TokenType.LEFT_CURLY_BRACE)
-                {
-                    index++;
-                    continue;
-                }
-                else if(statements[index][0].Type == TokenType.RIGHT_CURLY_BRACE)
+                if(statements[index][0].Type == TokenType.RIGHT_CURLY_BRACE)
                 {
                     ifStatementCounter--;
-                    index++;
-                    continue;
                 }
                 else if(statements[index][0].Type == TokenType.IF)
                 {
@@ -82,9 +79,12 @@ namespace Sol_Script
             {
                 Scope ifScope = new Scope(newStatements);
                 ifScope.Run();
+                return index;
             }
-
-            return index;
+            else
+            {
+                return index - 1;
+            }
         }
     }
 }
