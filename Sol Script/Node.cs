@@ -227,7 +227,19 @@ namespace Sol_Script
 
         public override object Evaluate()
         {
-            return Scope.variables[Name];
+            object result;
+            if(Scope.variables.TryGetValue(Name, out result))
+            {
+                return result;
+            }
+
+            if(Scope.externalVariables.TryGetValue(Name, out result))
+            {
+                return result;
+            }
+
+
+            throw new Exception($"Variable of name '{Name}' is not defined in this scope.");
         }
     }
 }

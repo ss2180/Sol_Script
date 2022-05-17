@@ -1,13 +1,13 @@
-print("Hello")
+
+x = 5
 
 if(4 < (2 * 12))
 {
-    if(true)
-    {
-        print(", ")
-    }
+    print(x)
 
-    print("World")
+    x = x + 1
+
+    print(x)
 }
 
-print("!")
+print(x)s

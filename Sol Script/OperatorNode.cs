@@ -57,7 +57,11 @@ namespace Sol_Script
 
             if(Left is IdentifierNode inode)
             {
-                if (Scope.variables.TryGetValue(inode.Name, out _))
+                if (Scope.externalVariables.TryGetValue(inode.Name, out _))
+                {
+                    Scope.externalVariables[inode.Name] = expression;
+                }
+                else if (Scope.variables.TryGetValue(inode.Name, out _))
                 {
                     Scope.variables[inode.Name] = expression;
                 }

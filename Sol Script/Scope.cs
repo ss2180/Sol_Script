@@ -8,7 +8,8 @@ namespace Sol_Script
 {
     class Scope
     {
-        public Dictionary<string, object> variables { get; set; }
+        public Dictionary<string, object> variables;
+        public Dictionary<string, object> externalVariables;
         public List<List<Token>> statements { get; set; }
 
         private Parser parser = new Parser();
@@ -17,6 +18,14 @@ namespace Sol_Script
         {
             statements = listOfStatements;
             variables = new Dictionary<string, object>();
+            externalVariables = new Dictionary<string, object>();
+        }
+
+        public Scope(List<List<Token>> listOfStatements, Dictionary<string, object> externVariables)
+        {
+            statements = listOfStatements;
+            variables = new Dictionary<string, object>();
+            externalVariables = externVariables;
         }
 
         public void Run()
@@ -77,7 +86,7 @@ namespace Sol_Script
 
             if(ifResult)
             {
-                Scope ifScope = new Scope(newStatements);
+                Scope ifScope = new Scope(newStatements, variables);
                 ifScope.Run();
                 return index;
             }
