@@ -1,13 +1,14 @@
 
-x = 5
+x = 0
 
-if(4 < (2 * 12))
+while(x < 10)
 {
+    if(x > 4)
+    {
+        print(x * 4)
+    }
     print(x)
-
     x = x + 1
-
-    print(x)
 }
 
-print(x)s
+print("HI")

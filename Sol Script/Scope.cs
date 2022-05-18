@@ -8,8 +8,7 @@ namespace Sol_Script
 {
     class Scope
     {
-        public Dictionary<string, object> variables;
-        public Dictionary<string, object> externalVariables;
+        public List<Dictionary<string, object>> variables = new List<Dictionary<string, object>>();
         public List<List<Token>> statements { get; set; }
 
         private Parser parser = new Parser();
@@ -17,15 +16,14 @@ namespace Sol_Script
         public Scope(List<List<Token>> listOfStatements)
         {
             statements = listOfStatements;
-            variables = new Dictionary<string, object>();
-            externalVariables = new Dictionary<string, object>();
+            variables.Add(new Dictionary<string, object>());
         }
 
-        public Scope(List<List<Token>> listOfStatements, Dictionary<string, object> externVariables)
+        public Scope(List<List<Token>> listOfStatements, List<Dictionary<string, object>> externalVariables)
         {
             statements = listOfStatements;
-            variables = new Dictionary<string, object>();
-            externalVariables = externVariables;
+            variables = externalVariables;
+            variables.Add(new Dictionary<string, object>());
         }
 
         public void Run()
@@ -38,6 +36,9 @@ namespace Sol_Script
                     {
                         case TokenType.IF:
                             i = HandleIf(statements, i) - 1;
+                            break;
+                        case TokenType.WHILE:
+                            i = HandleWhile(statements, i) - 1;
                             break;
                         default:
                             
@@ -55,6 +56,8 @@ namespace Sol_Script
             {
                 Console.WriteLine($"Error: {e.Message}");
             }
+
+            variables.RemoveAt(variables.Count - 1);
         }
 
         private int HandleIf(List<List<Token>> statements, int index)
@@ -63,20 +66,20 @@ namespace Sol_Script
             Node AST_Root = Node.Build(expression, this);
             bool ifResult = (bool)AST_Root.Evaluate();
 
-            int ifStatementCounter = 1;
+            int scopeCounter = 1;
 
             List<List<Token>> newStatements = new List<List<Token>>();
 
             index++;
-            while (index < statements.Count && ifStatementCounter != 0)
+            while (index < statements.Count && scopeCounter != 0)
             {
                 if(statements[index][0].Type == TokenType.RIGHT_CURLY_BRACE)
                 {
-                    ifStatementCounter--;
+                    scopeCounter--;
                 }
-                else if(statements[index][0].Type == TokenType.IF)
+                else if(statements[index][0].Type == TokenType.IF || statements[index][0].Type == TokenType.WHILE)
                 {
-                    ifStatementCounter++;
+                    scopeCounter++;
                 }
 
                 newStatements.Add(statements[index]);
@@ -94,6 +97,52 @@ namespace Sol_Script
             {
                 return index - 1;
             }
+        }
+
+        private int HandleWhile(List<List<Token>> statements, int index)
+        {
+            Stack<Token> expression = parser.Parse(statements[index]);
+            Node AST_Root = Node.Build(expression, this);
+            bool whileResult = (bool)AST_Root.Evaluate();
+
+            int scopeCounter = 1;
+
+            List<List<Token>> newStatements = new List<List<Token>>();
+
+            index++;
+            while (index < statements.Count && scopeCounter != 0)
+            {
+                if (statements[index][0].Type == TokenType.RIGHT_CURLY_BRACE)
+                {
+                    scopeCounter--;
+                }
+                else if (statements[index][0].Type == TokenType.IF || statements[index][0].Type == TokenType.WHILE)
+                {
+                    scopeCounter++;
+                }
+
+                newStatements.Add(statements[index]);
+
+                index++;
+            }
+
+            if(whileResult)
+            {
+                while (whileResult)
+                {
+                    Scope whileScope = new Scope(newStatements, variables);
+                    whileScope.Run();
+
+                    whileResult = (bool)AST_Root.Evaluate();
+                }
+            }
+            else
+            {
+                return index - 1;
+            }
+
+
+            return index;
         }
     }
 }

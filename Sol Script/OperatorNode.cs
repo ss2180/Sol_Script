@@ -57,17 +57,19 @@ namespace Sol_Script
 
             if(Left is IdentifierNode inode)
             {
-                if (Scope.externalVariables.TryGetValue(inode.Name, out _))
+                bool assigned = false;
+                foreach(var dict in Scope.variables)
                 {
-                    Scope.externalVariables[inode.Name] = expression;
+                    if(dict.TryGetValue(inode.Name, out _))
+                    {
+                        dict[inode.Name] = expression;
+                        assigned = true;
+                    }
                 }
-                else if (Scope.variables.TryGetValue(inode.Name, out _))
+
+                if(!assigned)
                 {
-                    Scope.variables[inode.Name] = expression;
-                }
-                else
-                {
-                    Scope.variables.Add(inode.Name, expression);
+                    Scope.variables[Scope.variables.Count - 1].Add(inode.Name, expression);
                 }
 
                 return 0;

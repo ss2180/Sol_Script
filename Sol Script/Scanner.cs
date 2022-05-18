@@ -260,6 +260,20 @@ namespace Sol_Script
                         }
                     }
                     break;
+                case 'w':
+                    if (index + 1 < EOF)
+                    {
+                        if (text.Substring(index, 5) == "while" && !char.IsLetterOrDigit(text[index + 5]))
+                        {
+                            _tokens.Add(new Token(TokenType.WHILE, "while"));
+                            index += 5;
+                        }
+                        else
+                        {
+                            index = ScanIdentifier(text, index);
+                        }
+                    }
+                    break;
                 default:
                     index = ScanIdentifier(text, index);
                     break;

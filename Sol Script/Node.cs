@@ -55,6 +55,7 @@ namespace Sol_Script
                 case TokenType.NEGATE:
                 case TokenType.PRINT:
                 case TokenType.IF:
+                case TokenType.WHILE:
                     node = new UnaryNode(token.Type);
                     break;
                 default:
@@ -114,7 +115,7 @@ namespace Sol_Script
 
                 return 0;
             }
-            else if(Type == TokenType.IF)
+            else if(Type == TokenType.IF || Type == TokenType.WHILE)
             {
                 if(a is bool boolVal)
                 {
@@ -228,16 +229,13 @@ namespace Sol_Script
         public override object Evaluate()
         {
             object result;
-            if(Scope.variables.TryGetValue(Name, out result))
+            foreach (var dict in Scope.variables)
             {
-                return result;
+                if (dict.TryGetValue(Name, out result))
+                {
+                    return result;
+                }
             }
-
-            if(Scope.externalVariables.TryGetValue(Name, out result))
-            {
-                return result;
-            }
-
 
             throw new Exception($"Variable of name '{Name}' is not defined in this scope.");
         }

@@ -19,7 +19,7 @@ namespace Sol_Script
         IDENTIFIER,
 
         //Keywords
-        PRINT, IF
+        PRINT, IF, WHILE
     }
 
     class Token
