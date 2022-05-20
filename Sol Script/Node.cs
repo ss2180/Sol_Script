@@ -170,7 +170,7 @@ namespace Sol_Script
             }
             else if(Type == TokenType.PRINT)
             {
-                Console.WriteLine(a);
+                Console.Write(a);
 
                 return 0;
             }

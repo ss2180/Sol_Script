@@ -1,13 +1,7 @@
-x = list()
+print(1 - 2)
 
-listadd(x, 2)
+print(2.5 + 2.5 - 1.25)
 
-y = listget(x,0)
+print((10 * 2) / 6)
 
-print(y)
-
-listchange(x, 0, 10)
-
-y = listget(x,0)
-
-print(y)
+print(8.5 / (2 * 9) - -3)

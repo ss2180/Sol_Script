@@ -116,8 +116,6 @@ namespace Sol_Script
             {
                 if(list.Count > 0)
                 {
-                    Console.WriteLine(list[0].GetType());
-                    Console.WriteLine(value.GetType());
                     if (list[0].GetType() != value.GetType())
                     {
                         throw new Exception($"Cannot assign {value.GetType()} to list of {list[0].GetType()}");

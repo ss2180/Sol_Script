@@ -228,7 +228,7 @@ namespace Sol_Script
             }
 
 
-            return index;
+            return index - 1;
         }
     }
 }

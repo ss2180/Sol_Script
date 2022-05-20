@@ -8,7 +8,7 @@ namespace Sol_Script
     {
         private static int Main()
         {
-            string source = File.ReadAllText("../../../source.sol");
+            string source = File.ReadAllText("../../../source4.sol");
 
             Scanner scanner = new Scanner();
 
