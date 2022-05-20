@@ -48,9 +48,57 @@ namespace Sol_Script
                     return EvaluateBooleanOperator();
                 case TokenType.ASSIGN:
                     return HandleAssignment();
+                case TokenType.INPUT:
+                    return HandleInput();
                 default:
                     throw new Exception($"Unexpected operator {Type}");
             }
+        }
+
+        private object HandleInput()
+        {
+            object text = Left.Evaluate();
+            object parseFlag = Right.Evaluate();
+
+            if (text is string stringVal)
+            {
+                if(parseFlag is int pFlag)
+                {
+                    Console.Write(stringVal);
+                    string userInput = Console.ReadLine();
+                    switch (pFlag)
+                    {
+                        case 0:
+                            return userInput;
+                        case 1:
+                            int iResult;
+                            if(int.TryParse(userInput, out iResult))
+                            {
+                                return iResult;
+                            }
+                            throw new Exception($"Could not parse '{userInput}' to an int");
+                        case 2:
+                            float fResult;
+                            if (float.TryParse(userInput, out fResult))
+                            {
+                                return fResult;
+                            }
+                            throw new Exception($"Could not parse '{userInput}' to a float.");
+                        case 3:
+                            bool bResult;
+                            if (bool.TryParse(userInput, out bResult))
+                            {
+                                return bResult;
+                            }
+                            throw new Exception($"Could not parse '{userInput}' to a bool");
+                        default:
+                            throw new Exception($"Invalde flag '{pFlag}'");
+                    }
+                }
+                throw new Exception("Expected parse flag to be an integer.");
+                
+            }
+            throw new Exception($"Input expects string value, received {text.GetType()}");
         }
 
         private object HandleAssignment()

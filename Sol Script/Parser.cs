@@ -17,10 +17,41 @@ namespace Sol_Script
             switch(token.Type)
             {
                 case TokenType.IDENTIFIER:
-                    if(tokens[1].Type == TokenType.ASSIGN)
+                    if (tokens[1].Type == TokenType.ASSIGN)
                     {
                         expression = tokens.GetRange(2, tokens.Count - 2);
-                        Stack<Token> tokenStack = ConvertToPrefix(expression);
+                        Stack<Token> tokenStack = null;
+
+                        //TODO: Make the retireval of input arguments more generic to work with custom functions as well.
+                        //Check if expression is function or keyword
+                        if (expression[0].Type == TokenType.INPUT)
+                        {
+                            //expresion legnth should be 6
+                            if (expression.Count == 6)
+                            {
+                                if (expression[1].Type == TokenType.LEFT_BRACKET && expression[5].Type == TokenType.RIGHT_BRACKET)
+                                {
+                                    // TODO: Make this more generic then hard coding for this one case for custom functions.
+                                    // Push arguments and the input keyword onto stack.
+                                    tokenStack = new Stack<Token>();
+                                    tokenStack.Push(expression[4]);
+                                    tokenStack.Push(expression[2]);
+                                    tokenStack.Push(expression[0]);
+                                }
+                                else
+                                {
+                                    throw new Exception("The 'input' keyword expects opening and closing brackets.");
+                                }
+                            }
+                            else
+                            {
+                                throw new Exception("Input expects 2 arguments, seperated by a comma, enclosed in brackets.");
+                            }
+                        }
+                        else
+                        {
+                            tokenStack = ConvertToPrefix(expression);
+                        }
 
                         // Push assignment and identifer back onto stack.
                         tokenStack.Push(tokens[0]);

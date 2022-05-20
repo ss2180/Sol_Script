@@ -122,6 +122,10 @@ namespace Sol_Script
                         _tokens.Add(new Token(TokenType.RIGHT_CURLY_BRACE, "}"));
                         index++;
                         break;
+                    case ',':
+                        _tokens.Add(new Token(TokenType.COMMA, ","));
+                        index++;
+                        break;
                     default:
                         if (char.IsDigit(line[index]) || line[index] == '.')
                         {
@@ -249,9 +253,26 @@ namespace Sol_Script
                     break;
                 //if
                 case 'i':
-                    if(index + 1 < EOF)
+                    if(index + 4 < EOF)
                     {
-                        if(text.Substring(index, 2) == "if" && !char.IsLetterOrDigit(text[index + 2]))
+                        if(text.Substring(index, 5) == "input" && !char.IsLetterOrDigit(text[index + 5]))
+                        {
+                            _tokens.Add(new Token(TokenType.INPUT, "input"));
+                            index += 5;
+                        }
+                        else if (text.Substring(index, 2) == "if" && !char.IsLetterOrDigit(text[index + 2]))
+                        {
+                            _tokens.Add(new Token(TokenType.IF, "if"));
+                            index += 2;
+                        }
+                        else
+                        {
+                            index = ScanIdentifier(text, index);
+                        }
+                    }
+                    else if(index + 1 < EOF)
+                    {
+                        if (text.Substring(index, 2) == "if" && !char.IsLetterOrDigit(text[index + 2]))
                         {
                             _tokens.Add(new Token(TokenType.IF, "if"));
                             index += 2;
