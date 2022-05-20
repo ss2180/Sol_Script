@@ -1,21 +1,13 @@
-y = input("Enter a value: ", 0)
+x = list()
 
-x = 0
+listadd(x, 2)
 
-while(x < 10)
-{
-    if(x < 4)
-    {
-        print("if")
-    }
-    elif(x > 3 and x < 8)
-    {
-        print("elif")
-    }
-    else
-    {
-        print("else")
-    }
+y = listget(x,0)
 
-    x = x + 1
-}
+print(y)
+
+listchange(x, 0, 10)
+
+y = listget(x,0)
+
+print(y)

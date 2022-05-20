@@ -48,6 +48,46 @@ namespace Sol_Script
                                 throw new Exception("Input expects 2 arguments, seperated by a comma, enclosed in brackets.");
                             }
                         }
+                        else if(expression[0].Type == TokenType.LIST)
+                        {
+                            if(expression.Count == 3)
+                            {
+                                if (expression[1].Type == TokenType.LEFT_BRACKET && expression[2].Type == TokenType.RIGHT_BRACKET)
+                                {
+                                    tokenStack = new Stack<Token>();
+                                    tokenStack.Push(expression[0]);
+                                }
+                                else
+                                {
+                                    throw new Exception("The 'list' keyword expects opening and closing brackets.");
+                                }
+                            }
+                            else
+                            {
+                                throw new Exception("List should take no arguments and be followed by parenthesis.");
+                            }
+                        }
+                        else if(expression[0].Type == TokenType.LISTGET)
+                        {
+                            if (expression.Count == 6)
+                            {
+                                if (expression[1].Type == TokenType.LEFT_BRACKET && expression[5].Type == TokenType.RIGHT_BRACKET)
+                                {
+                                    tokenStack = new Stack<Token>();
+                                    tokenStack.Push(expression[4]);
+                                    tokenStack.Push(expression[2]);
+                                    tokenStack.Push(expression[0]);
+                                }
+                                else
+                                {
+                                    throw new Exception("The 'listget' keyword expects opening and closing brackets.");
+                                }
+                            }
+                            else
+                            {
+                                throw new Exception("listget expects two arguments");
+                            }
+                        }
                         else
                         {
                             tokenStack = ConvertToPrefix(expression);
@@ -61,6 +101,71 @@ namespace Sol_Script
                     }
 
                     throw new Exception("Expected assignment after identifier");
+
+                case TokenType.LISTREMOVE:
+                    if (tokens.Count == 6)
+                    {
+                        if (tokens[1].Type == TokenType.LEFT_BRACKET && tokens[5].Type == TokenType.RIGHT_BRACKET)
+                        {
+                            Stack<Token> tokenStack = new Stack<Token>();
+                            tokenStack.Push(tokens[4]);
+                            tokenStack.Push(tokens[2]);
+                            tokenStack.Push(tokens[0]);
+                            return tokenStack;
+                        }
+                        else
+                        {
+                            throw new Exception("The 'listremove' keyword expects opening and closing brackets.");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Listremove expects two arguments");
+                    }
+
+                case TokenType.LISTADD:
+                    if (tokens.Count == 6)
+                    {
+                        if (tokens[1].Type == TokenType.LEFT_BRACKET && tokens[5].Type == TokenType.RIGHT_BRACKET)
+                        {
+                            Stack<Token> tokenStack = new Stack<Token>();
+                            tokenStack.Push(tokens[4]);
+                            tokenStack.Push(tokens[2]);
+                            tokenStack.Push(tokens[0]);
+                            return tokenStack;
+                        }
+                        else
+                        {
+                            throw new Exception("The 'listadd' keyword expects opening and closing brackets.");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Listadd expects two arguments");
+                    }
+
+                case TokenType.LISTCHANGE:
+                    if (tokens.Count == 8)
+                    {
+                        if (tokens[1].Type == TokenType.LEFT_BRACKET && tokens[7].Type == TokenType.RIGHT_BRACKET)
+                        {
+                            Stack<Token> tokenStack = new Stack<Token>();
+                            tokenStack.Push(tokens[6]);
+                            tokenStack.Push(tokens[4]);
+                            tokenStack.Push(tokens[2]);
+                            tokenStack.Push(tokens[0]);
+                            return tokenStack;
+                        }
+                        else
+                        {
+                            throw new Exception("The 'listchange' keyword expects opening and closing brackets.");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Listchange expects three arguments");
+                    }
+
 
                 case TokenType.PRINT:
                     if(tokens[1].Type == TokenType.LEFT_BRACKET)

@@ -49,6 +49,12 @@ namespace Sol_Script
                 case TokenType.IDENTIFIER:
                     node = new IdentifierNode(token.Type, token.TokenValue);
                     break;
+                case TokenType.LIST:
+                    node = new ListNode(token.Type);
+                    break;
+                case TokenType.LISTCHANGE:
+                    node = new ChangeListNode(token.Type);
+                    break;
                 case TokenType.NOT:
                 case TokenType.NEGATE:
                 case TokenType.PRINT:
@@ -63,6 +69,60 @@ namespace Sol_Script
             }
 
             return node;
+        }
+    }
+
+    class ChangeListNode : Node
+    {
+        public Node List { get; set; } = null;
+        public Node Index { get; set; } = null;
+        public Node Value { get; set; } = null;
+
+        public ChangeListNode(TokenType type) : base(type)
+        {
+
+        }
+
+        public override void BuildAST(Stack<Token> tokens)
+        {
+            List = CreateNode(tokens.Pop());
+            List.Scope = Scope;
+            List.BuildAST(tokens);
+
+            Index = CreateNode(tokens.Pop());
+            Index.Scope = Scope;
+            Index.BuildAST(tokens);
+
+            Value = CreateNode(tokens.Pop());
+            Value.Scope = Scope;
+            Value.BuildAST(tokens);
+        }
+
+        public override object Evaluate()
+        {
+            object a = List.Evaluate();
+            object b = Index.Evaluate();
+            object c = Value.Evaluate();
+
+
+            if(a is List<object> list && b is int index_val)
+            {
+                if(index_val < 0 || index_val > list.Count - 1)
+                {
+                    throw new Exception("Index must be within bounds of list.");
+                }
+
+                if(list[index_val].GetType() != c.GetType())
+                {
+                    throw new Exception($"Cannot not assign value of type {c.GetType()} to list of type {list[index_val].GetType()}");
+                }
+
+                list[index_val] = c;
+
+                return 0;
+            }
+
+            throw new Exception("A list and index must be passed as arguments to nodechange");
         }
     }
 
@@ -129,7 +189,25 @@ namespace Sol_Script
         }
     }
 
-    
+    class ListNode : Node
+    {
+        public List<object> list = null;
+
+        public ListNode(TokenType type) : base(type)
+        {
+            list = new List<object>();
+        }
+
+        public override void BuildAST(Stack<Token> tokens)
+        {
+            return;
+        }
+
+        public override object Evaluate()
+        {
+            return list;
+        }
+    }
 
     class IntNumNode : Node
     {

@@ -50,9 +50,85 @@ namespace Sol_Script
                     return HandleAssignment();
                 case TokenType.INPUT:
                     return HandleInput();
+                case TokenType.LISTADD:
+                    return HandleListAdd();
+                case TokenType.LISTREMOVE:
+                    return HandleListRemove();
+                case TokenType.LISTGET:
+                    return HandleListGet();
                 default:
                     throw new Exception($"Unexpected operator {Type}");
             }
+        }
+
+        private object HandleListGet()
+        {
+            object _list = Left.Evaluate();
+            object index = Right.Evaluate();
+
+            if (_list is List<object> list)
+            {
+                if (index is int index_val)
+                {
+                    if (index_val > list.Count - 1 || index_val < 0)
+                    {
+                        throw new Exception("index must be within the bounds of the list");
+                    }
+
+                    return list[index_val];
+                }
+                throw new Exception("listget index must be an integer value");
+
+            }
+            throw new Exception("A listget must be passed into listremove");
+        }
+
+        private object HandleListRemove()
+        {
+            object _list = Left.Evaluate();
+            object index = Right.Evaluate();
+
+            if (_list is List<object> list)
+            {
+                if(index is int index_val)
+                {
+                    if(index_val > list.Count - 1 || index_val < 0)
+                    {
+                        throw new Exception("index must be within the bounds of the list");
+                    }
+
+                    list.RemoveAt(index_val);
+
+                    return 0;
+                }
+                throw new Exception("listremove index must be an integer value");
+                
+            }
+            throw new Exception("A list must be passed into listremove");
+        }
+
+        private object HandleListAdd()
+        {
+            object _list = Left.Evaluate();
+            object value = Right.Evaluate();
+
+            if(_list is List<object> list)
+            {
+                if(list.Count > 0)
+                {
+                    Console.WriteLine(list[0].GetType());
+                    Console.WriteLine(value.GetType());
+                    if (list[0].GetType() != value.GetType())
+                    {
+                        throw new Exception($"Cannot assign {value.GetType()} to list of {list[0].GetType()}");
+                    }
+                }
+
+                list.Add(value);
+
+                return 0;
+            }
+            throw new Exception("A list must be passed into listadd");
         }
 
         private object HandleInput()

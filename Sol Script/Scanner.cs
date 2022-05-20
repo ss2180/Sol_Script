@@ -347,6 +347,74 @@ namespace Sol_Script
                         }
                     }
                     break;
+                case 'l':
+                    if(index + 9 < EOF)
+                    {
+                        if (text.Substring(index, 10) == "listremove" && !char.IsLetterOrDigit(text[index + 10]))
+                        {
+                            _tokens.Add(new Token(TokenType.LISTREMOVE, "listremove"));
+                            index += 10;
+                        }
+                        else if (text.Substring(index, 10) == "listchange" && !char.IsLetterOrDigit(text[index + 10]))
+                        {
+                            _tokens.Add(new Token(TokenType.LISTCHANGE, "listchange"));
+                            index += 10;
+                        }
+                        else if (text.Substring(index, 7) == "listadd" && !char.IsLetterOrDigit(text[index + 7]))
+                        {
+                            _tokens.Add(new Token(TokenType.LISTADD, "listadd"));
+                            index += 7;
+                        }
+                        else if (text.Substring(index, 7) == "listget" && !char.IsLetterOrDigit(text[index + 7]))
+                        {
+                            _tokens.Add(new Token(TokenType.LISTGET, "listget"));
+                            index += 7;
+                        }
+                        else if (text.Substring(index, 4) == "list" && !char.IsLetterOrDigit(text[index + 4]))
+                        {
+                            _tokens.Add(new Token(TokenType.LIST, "list"));
+                            index += 4;
+                        }
+                        else
+                        {
+                            index = ScanIdentifier(text, index);
+                        }
+                    }
+                    else if(index + 6 < EOF)
+                    {
+                        if (text.Substring(index, 7) == "listadd" && !char.IsLetterOrDigit(text[index + 7]))
+                        {
+                            _tokens.Add(new Token(TokenType.LISTADD, "listadd"));
+                            index += 7;
+                        }
+                        else if (text.Substring(index, 7) == "listget" && !char.IsLetterOrDigit(text[index + 7]))
+                        {
+                            _tokens.Add(new Token(TokenType.LISTGET, "listget"));
+                            index += 7;
+                        }
+                        else if (text.Substring(index, 4) == "list" && !char.IsLetterOrDigit(text[index + 4]))
+                        {
+                            _tokens.Add(new Token(TokenType.LIST, "list"));
+                            index += 4;
+                        }
+                        else
+                        {
+                            index = ScanIdentifier(text, index);
+                        }
+                    }
+                    else if(index + 3 < EOF)
+                    {
+                        if (text.Substring(index, 4) == "list" && !char.IsLetterOrDigit(text[index + 4]))
+                        {
+                            _tokens.Add(new Token(TokenType.LIST, "list"));
+                            index += 4;
+                        }
+                        else
+                        {
+                            index = ScanIdentifier(text, index);
+                        }
+                    }
+                    break;
                 default:
                     index = ScanIdentifier(text, index);
                     break;
