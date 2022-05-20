@@ -13,6 +13,8 @@ namespace Sol_Script
 
         private Parser parser = new Parser();
 
+        private bool ifExecuted = false;
+
         public Scope(List<List<Token>> listOfStatements)
         {
             statements = listOfStatements;
@@ -35,10 +37,16 @@ namespace Sol_Script
                     switch (statements[i][0].Type)
                     {
                         case TokenType.IF:
-                            i = HandleIf(statements, i) - 1;
+                            i = HandleIf(statements, i);
+                            break;
+                        case TokenType.ELIF:
+                            i = HandleElif(statements, i);
+                            break;
+                        case TokenType.ELSE:
+                            i = HandleElse(statements, i);
                             break;
                         case TokenType.WHILE:
-                            i = HandleWhile(statements, i) - 1;
+                            i = HandleWhile(statements, i);
                             break;
                         default:
                             
@@ -65,6 +73,7 @@ namespace Sol_Script
             Stack<Token> expression = parser.Parse(statements[index]);
             Node AST_Root = Node.Build(expression, this);
             bool ifResult = (bool)AST_Root.Evaluate();
+            ifExecuted = false;
 
             int scopeCounter = 1;
 
@@ -77,7 +86,7 @@ namespace Sol_Script
                 {
                     scopeCounter--;
                 }
-                else if(statements[index][0].Type == TokenType.IF || statements[index][0].Type == TokenType.WHILE)
+                else if(statements[index][0].Type == TokenType.IF || statements[index][0].Type == TokenType.ELIF || statements[index][0].Type == TokenType.ELSE || statements[index][0].Type == TokenType.WHILE)
                 {
                     scopeCounter++;
                 }
@@ -91,7 +100,84 @@ namespace Sol_Script
             {
                 Scope ifScope = new Scope(newStatements, variables);
                 ifScope.Run();
-                return index;
+                ifExecuted = true;
+                return index - 1;
+            }
+            else
+            {
+                return index - 1;
+            }
+        }
+
+        private int HandleElif(List<List<Token>> statements, int index)
+        {
+            Stack<Token> expression = parser.Parse(statements[index]);
+            Node AST_Root = Node.Build(expression, this);
+            bool ifResult = (bool)AST_Root.Evaluate();
+
+            int scopeCounter = 1;
+
+            List<List<Token>> newStatements = new List<List<Token>>();
+
+            index++;
+            while (index < statements.Count && scopeCounter != 0)
+            {
+                if (statements[index][0].Type == TokenType.RIGHT_CURLY_BRACE)
+                {
+                    scopeCounter--;
+                }
+                else if (statements[index][0].Type == TokenType.IF || statements[index][0].Type == TokenType.ELIF || statements[index][0].Type == TokenType.ELSE || statements[index][0].Type == TokenType.WHILE)
+                {
+                    scopeCounter++;
+                }
+
+                newStatements.Add(statements[index]);
+
+                index++;
+            }
+
+            if (!ifExecuted)
+            {
+                if (ifResult)
+                {
+                    Scope elifScope = new Scope(newStatements, variables);
+                    elifScope.Run();
+                    ifExecuted = true;
+                }
+            }
+
+            return index - 1;
+            
+        }
+
+        private int HandleElse(List<List<Token>> statements, int index)
+        {
+            int scopeCounter = 1;
+
+            List<List<Token>> newStatements = new List<List<Token>>();
+
+            index++;
+            while (index < statements.Count && scopeCounter != 0)
+            {
+                if (statements[index][0].Type == TokenType.RIGHT_CURLY_BRACE)
+                {
+                    scopeCounter--;
+                }
+                else if (statements[index][0].Type == TokenType.IF || statements[index][0].Type == TokenType.ELIF || statements[index][0].Type == TokenType.ELSE || statements[index][0].Type == TokenType.WHILE)
+                {
+                    scopeCounter++;
+                }
+
+                newStatements.Add(statements[index]);
+
+                index++;
+            }
+
+            if (!ifExecuted)
+            {
+                Scope elseScope = new Scope(newStatements, variables);
+                elseScope.Run();
+                return index - 1;
             }
             else
             {
@@ -116,7 +202,7 @@ namespace Sol_Script
                 {
                     scopeCounter--;
                 }
-                else if (statements[index][0].Type == TokenType.IF || statements[index][0].Type == TokenType.WHILE)
+                else if (statements[index][0].Type == TokenType.IF || statements[index][0].Type == TokenType.ELIF || statements[index][0].Type == TokenType.ELSE || statements[index][0].Type == TokenType.WHILE)
                 {
                     scopeCounter++;
                 }

@@ -251,7 +251,7 @@ namespace Sol_Script
                         }
                     }
                     break;
-                //if
+                //if, input
                 case 'i':
                     if(index + 4 < EOF)
                     {
@@ -321,6 +321,25 @@ namespace Sol_Script
                         {
                             _tokens.Add(new Token(TokenType.AND, "and"));
                             index += 3;
+                        }
+                        else
+                        {
+                            index = ScanIdentifier(text, index);
+                        }
+                    }
+                    break;
+                case 'e':
+                    if(index + 3 < EOF)
+                    {
+                        if (text.Substring(index, 4) == "else" && !char.IsLetterOrDigit(text[index + 4]))
+                        {
+                            _tokens.Add(new Token(TokenType.ELSE, "else"));
+                            index += 4;
+                        }
+                        else if (text.Substring(index, 4) == "elif" && !char.IsLetterOrDigit(text[index + 4]))
+                        {
+                            _tokens.Add(new Token(TokenType.ELIF, "elif"));
+                            index += 4;
                         }
                         else
                         {

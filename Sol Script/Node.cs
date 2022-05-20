@@ -53,6 +53,7 @@ namespace Sol_Script
                 case TokenType.NEGATE:
                 case TokenType.PRINT:
                 case TokenType.IF:
+                case TokenType.ELIF:
                 case TokenType.WHILE:
                     node = new UnaryNode(token.Type);
                     break;
@@ -113,7 +114,7 @@ namespace Sol_Script
 
                 return 0;
             }
-            else if(Type == TokenType.IF || Type == TokenType.WHILE)
+            else if(Type == TokenType.IF || Type == TokenType.WHILE || Type == TokenType.ELIF)
             {
                 if(a is bool boolVal)
                 {
