@@ -232,6 +232,7 @@ namespace Sol_Script
                         }
                     }
                     break;
+                //print
                 case 'p':
                     if (index + 4 < EOF)
                     {
@@ -246,6 +247,7 @@ namespace Sol_Script
                         }
                     }
                     break;
+                //if
                 case 'i':
                     if(index + 1 < EOF)
                     {
@@ -260,13 +262,44 @@ namespace Sol_Script
                         }
                     }
                     break;
+                //while
                 case 'w':
-                    if (index + 1 < EOF)
+                    if (index + 4 < EOF)
                     {
                         if (text.Substring(index, 5) == "while" && !char.IsLetterOrDigit(text[index + 5]))
                         {
                             _tokens.Add(new Token(TokenType.WHILE, "while"));
                             index += 5;
+                        }
+                        else
+                        {
+                            index = ScanIdentifier(text, index);
+                        }
+                    }
+                    break;
+                //or
+                case 'o':
+                    if (index + 1 < EOF)
+                    {
+                        if (text.Substring(index, 2) == "or" && !char.IsLetterOrDigit(text[index + 2]))
+                        {
+                            _tokens.Add(new Token(TokenType.OR, "or"));
+                            index += 2;
+                        }
+                        else
+                        {
+                            index = ScanIdentifier(text, index);
+                        }
+                    }
+                    break;
+                //and
+                case 'a':
+                    if (index + 2 < EOF)
+                    {
+                        if (text.Substring(index, 3) == "and" && !char.IsLetterOrDigit(text[index + 3]))
+                        {
+                            _tokens.Add(new Token(TokenType.AND, "and"));
+                            index += 3;
                         }
                         else
                         {

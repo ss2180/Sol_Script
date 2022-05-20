@@ -43,6 +43,8 @@ namespace Sol_Script
                 case TokenType.LESS_OR_EQUAL:
                 case TokenType.EQUAL:
                 case TokenType.NOTEQUAL:
+                case TokenType.AND:
+                case TokenType.OR:
                     return EvaluateBooleanOperator();
                 case TokenType.ASSIGN:
                     return HandleAssignment();
@@ -215,7 +217,11 @@ namespace Sol_Script
 
                 case TokenType.EQUAL:
                 case TokenType.NOTEQUAL:
-                    return HandleEquality(Left.Evaluate(), Right.Evaluate(), Type);
+                case TokenType.AND:
+                case TokenType.OR:
+                    return HandleComparison(Left.Evaluate(), Right.Evaluate(), Type);
+
+                
                 default:
                     throw new Exception($"Unexpected token type {Type}");
             }
@@ -261,7 +267,7 @@ namespace Sol_Script
             }
         }
 
-        private object HandleEquality(object a, object b, TokenType type)
+        private object HandleComparison(object a, object b, TokenType type)
         {
             if(a is bool)
             {
@@ -274,6 +280,14 @@ namespace Sol_Script
                     else if(type == TokenType.NOTEQUAL)
                     {
                         return (bool)a != (bool)b;
+                    }
+                    else if(type == TokenType.AND)
+                    {
+                        return (bool)a && (bool)b;
+                    }
+                    else if (type == TokenType.OR)
+                    {
+                        return (bool)a || (bool)b;
                     }
 
                     throw new Exception($"Expected operator type to be EQUALITY or INEQUALITY, recieved {type}");

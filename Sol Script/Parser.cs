@@ -174,6 +174,8 @@ namespace Sol_Script
                     case TokenType.NOTEQUAL:
                     case TokenType.NOT:
                     case TokenType.NEGATE:
+                    case TokenType.AND:
+                    case TokenType.OR:
                         HandleOperator(token);
                         break;
 
@@ -254,7 +256,7 @@ namespace Sol_Script
             int stackPrecidenceLevel = GetOperatorPrecidence(operatorTop);
             int operatorPrecidenceLevel = GetOperatorPrecidence(op);
 
-            if (stackPrecidenceLevel > operatorPrecidenceLevel)
+            if (stackPrecidenceLevel >= operatorPrecidenceLevel)
             {
                 return true;
             }
@@ -282,6 +284,8 @@ namespace Sol_Script
                 case TokenType.GREATER_OR_EQUAL:
                 case TokenType.LESS_OR_EQUAL:
                     return 1;
+                case TokenType.AND:
+                case TokenType.OR:
                 case TokenType.EQUAL:
                 case TokenType.NOTEQUAL:
                     return 0;
