@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace Sol_Script
 {
@@ -208,7 +206,7 @@ namespace Sol_Script
 
         public override object Evaluate()
         {
-            return Value;
+            return Regex.Unescape(Value);
         }
     }
 
@@ -229,9 +227,10 @@ namespace Sol_Script
         public override object Evaluate()
         {
             object result;
-            foreach (var dict in Scope.variables)
+            // Loop over dictionarys starting at the local scope and working outwards.
+            for(int i = Scope.variables.Count - 1; i >= 0; i--)
             {
-                if (dict.TryGetValue(Name, out result))
+                if (Scope.variables[i].TryGetValue(Name, out result))
                 {
                     return result;
                 }
